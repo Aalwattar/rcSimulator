@@ -9,6 +9,7 @@
 #include <stdio.h>
 #include "data.h"
 #include "PlatformConfig.h"
+#include "tmpInitData.h"
 /*FIXME */
 
 
@@ -325,10 +326,12 @@ int GetNodeOp2Value(struct node * dfg , int id){
 }
 
 unsigned int GetNodeEmulationHWdelay(struct node * dfg , int id){
-	return dfg[id].Emu.HWdelay;
+	return TaskTypeData[dfg[id].TypeID].HWdelay;
+	//return dfg[id].Emu.HWdelay;
 }
 unsigned int GetNodeEmulationSWdelay(struct node * dfg , int id){
-	return dfg[id].Emu.SWdelay;
+	return TaskTypeData[dfg[id].TypeID].SWdelay;
+	//return dfg[id].Emu.SWdelay;
 }
 
 void SetNodeEmulationHWdelay(struct node * dfg , int id, unsigned int newValue){

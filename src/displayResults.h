@@ -9,6 +9,6 @@
 #define DISPLAYRESULTS_H_
 
 
-void print_DFG(void);
+void print_DFG(struct node *);
 
 #endif /* DISPLAYRESULTS_H_ */

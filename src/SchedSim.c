@@ -7,6 +7,7 @@
  Description : Hello World in C, Ansi-style
  ============================================================================
  */
+/*
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,9 +26,9 @@ void initPRRsConfigTime(unsigned int * prrTime, int noPRRs);
 
 int main(int argc, char **argv) {
 
-	/*
+
 	 * Variable declarations
-	 */
+
 
 	struct node *dFG;
 	int dFGsize = 0;
@@ -40,12 +41,12 @@ int main(int argc, char **argv) {
 	static struct Counts counters = { 0, 0, 0, 0, 0, 0 };
 	Queue ReadyQ;
 
-	/*
+
 	 * Initialization functions.
-	 */
-	/*
+
+
 	 * TODO this function should load that Tasktypes directly
-	 */
+
 
 #if COMMAND_LINE_READ
 	struct ArgData argdatar;
@@ -58,11 +59,11 @@ int main(int argc, char **argv) {
 	initPRRsConfigTime(&PRRConfigValues[0][0], 5);
 	ReadyQ = CreateQueue(MAX_QUEUE_TASKS);
 	Init_TasksTypes();
-	/* Graph generation*/
+	 Graph generation
 
-	/*
+
 	 * Start Program
-	 */
+
 
 #if COMMAND_LINE_READ
 	if (argdatar.DFGNo < 0 || argdatar.DFGNo > NO_OF_DFGS) {
@@ -110,28 +111,28 @@ int main(int argc, char **argv) {
 
 		fprintf(stdout, "Processing: DFG[%d] with [%d] nodes ITERATION [%d] \n",
 				i, dFGsize, w);
-		/*
+
 		 * Reset Things before every DFG
-		 */
+
 
 		MakeEmpty(ReadyQ);
-		/* Reset Configuration Counter */
+		 Reset Configuration Counter
 		ResetConfigCount();
 		setTaskCounter(dFGsize);
 		reinitTasksTable(dFGsize);
 		ResetTimer();
 		RstCounters(&counters);
-		/*init seed*/
+		init seed
 		//srand(totalTV.Value);
-		/*
+
 		 * Start Processing DFG
-		 */
+
 
 		do {
-			/*
+
 			 * TODO Cannot remember Why I have these three states!! Might be  duplicated
 			 * code!! Double check if they are necessary and rewrite the code if necessary.
-			 */
+
 			switch (State) {
 			case CfgDone:
 #if  RCS_SCHED_I
@@ -206,16 +207,16 @@ int main(int argc, char **argv) {
 #else
 }
 #endif
-	/*
+
 	 * Generate graphs for task allocations
 	 *
-	 */
 
-	/*
+
+
 	 * Clean Up
-	 */
+
 	fprintf(stderr, "Cleaning up .... \n");
-	//CleanConfigTimeArray();
+//	CleanConfigTimeArray();
 	CleanTasksTable();
 	CleanAllPEs(&pEs);
 	DisposeQueue(ReadyQ);
@@ -223,14 +224,7 @@ int main(int argc, char **argv) {
 	return EXIT_SUCCESS;
 }
 
-void initPRRsConfigTime(unsigned int * prrTime, int noPRRs) {
-	int i;
-	for (i = 0; i < noPRRs; ++i) {
-
-		InitPRRConfigTime(i, prrTime[i]);
-
-	}
-}
 
 ///////////////////////////////////
 
+*/
