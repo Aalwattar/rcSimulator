@@ -145,7 +145,7 @@ void initPRRsConfigTime(unsigned int * prrTime, int noPRRs);
 
 			} while (getTaskCounter());
 
-			print_DFG(dFG);
+			//print_DFG(dFG);
 			simResults->noHW2SWMigration = counters.HW2SWMig;
 			simResults->noHWBusyCounter = counters.busyCounterHW;
 			simResults->noOfConfiguration = GetConfigCount();

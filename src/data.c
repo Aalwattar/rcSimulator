@@ -326,10 +326,25 @@ int GetNodeOp2Value(struct node * dfg , int id){
 }
 
 unsigned int GetNodeEmulationHWdelay(struct node * dfg , int id){
+
+
+	if (dfg[id].TypeID <0 || dfg[id].TypeID>=MAX_TASKS_TYPES)
+	{
+		fprintf(stderr,"ERROR [GetNodeEmulationHWdelay] Index out of range [%d] 8\n",dfg[id].TypeID);
+				exit(EXIT_FAILURE);
+
+	}
 	return TaskTypeData[dfg[id].TypeID].HWdelay;
 	//return dfg[id].Emu.HWdelay;
 }
 unsigned int GetNodeEmulationSWdelay(struct node * dfg , int id){
+	if (dfg[id].TypeID<0 || dfg[id].TypeID>=MAX_TASKS_TYPES)
+	{
+		fprintf(stderr,"ERROR [GetNodeEmulationSWdelay] Index out of range [%d] 8\n",dfg[id].TypeID);
+				exit(EXIT_FAILURE);
+
+	}
+
 	return TaskTypeData[dfg[id].TypeID].SWdelay;
 	//return dfg[id].Emu.SWdelay;
 }

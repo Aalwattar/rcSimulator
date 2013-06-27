@@ -188,6 +188,7 @@ int TickProcessor( struct Processor *processor)
 
 int LoadProcessor( struct Processor *processor, struct NodeData node )
 {
+
 	if (processor->Busy)
 	{
 		fprintf(stderr,"ERROR[LoadProcessor] Processor is busy\n");
@@ -232,12 +233,12 @@ int TickAllProcessors(struct Processor *processor, int size, struct node *dFG)
 				if (processor[i].Type==TypeHW)
 				{
 					setTaskTypeHWET(processor[i].CurrentModule, \
-									CalcuateExecTime(getTaskTypeHWET(processor[i].CurrentModule) , GetNodeEmulationHWdelay(dFG,processor[i].CurrentModule) ));
+									CalcuateExecTime(getTaskTypeHWET(processor[i].CurrentModule) , GetNodeEmulationHWdelay(dFG,processor[i].CurrentTaskID) ));
 
 				}else
 				{
 					setTaskTypeSWET(processor[i].CurrentModule,\
-							CalcuateExecTime(getTaskTypeSWET(processor[i].CurrentModule),GetNodeEmulationSWdelay(dFG,processor[i].CurrentModule)));
+							CalcuateExecTime(getTaskTypeSWET(processor[i].CurrentModule),GetNodeEmulationSWdelay(dFG,processor[i].CurrentTaskID)));
 
 				}
 				CalcSWPrio(processor[i].CurrentModule,processor,size);

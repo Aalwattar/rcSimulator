@@ -7,15 +7,16 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "rcsSimulator.h"
+#include  "rcsSimulator.h"
 int main()
 {
-	struct SimData simData={.typeData={1,2,3,2,1,3,1,1,3,5}};
-	struct SimResults simResults={0};
+	struct SimData simData={.typeData={1,1,1,1,1,1,1,1,1,1}};
+	struct SimResults simResults;
 
 	simData.dFGID=0;
 	simData.noGPP=0;
 	simData.noPRR=5;
+	simData.noOfNodes=10;
 
 	InitSimulator();
 	RunSimulator(&simData,&simResults);
