@@ -33,7 +33,7 @@ int main()
 			simResults.noSW2HWMigration, simResults.noHW2SWMigration, simResults.noOfReuse,
 			simResults.noOfSWTasks);
 
-	return EXIT_SUCCESS;
+	return (EXIT_SUCCESS);
 }
 
 

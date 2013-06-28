@@ -10,7 +10,6 @@ C_SRCS += \
 ../src/dfgTemplate.c \
 ../src/displayResults.c \
 ../src/drawTaskAllocation.c \
-../src/main.c \
 ../src/processors.c \
 ../src/queue.c \
 ../src/rcsSimulator.c \
@@ -25,7 +24,6 @@ OBJS += \
 ./src/dfgTemplate.o \
 ./src/displayResults.o \
 ./src/drawTaskAllocation.o \
-./src/main.o \
 ./src/processors.o \
 ./src/queue.o \
 ./src/rcsSimulator.o \
@@ -40,7 +38,6 @@ C_DEPS += \
 ./src/dfgTemplate.d \
 ./src/displayResults.d \
 ./src/drawTaskAllocation.d \
-./src/main.d \
 ./src/processors.d \
 ./src/queue.d \
 ./src/rcsSimulator.d \
