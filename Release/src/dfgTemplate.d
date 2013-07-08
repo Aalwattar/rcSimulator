@@ -1,6 +1,5 @@
-src/dfgTemplate.d src/dfgTemplate.o: ../src/dfgTemplate.c \
- ../src/PlatformConfig.h ../src/data.h \
- ../src/templates/dfgTemplate10_5_2.txt \
+src/dfgTemplate.d: ../src/dfgTemplate.c ../src/PlatformConfig.h \
+ ../src/data.h ../src/templates/dfgTemplate10_5_2.txt \
  ../src/templates/dfgTemplate25_10_2.txt \
  ../src/templates/dfgTemplate50_50_2.txt \
  ../src/templates/dfgTemplate100_150_2.txt \

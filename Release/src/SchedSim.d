@@ -1,1 +1,1 @@
-src/SchedSim.d src/SchedSim.o: ../src/SchedSim.c
+src/SchedSim.d: ../src/SchedSim.c
