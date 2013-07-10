@@ -42,5 +42,5 @@ int RCSchedII(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct no
 int RCSchedIII(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct node *);
 int AddTask2Queue(Queue ReadyQ, struct node *,int size);
 void RstCounters(struct Counts* counters);
-
+unsigned int getConfigTime(int id);
 #endif /* SCHEDULERS_H_ */

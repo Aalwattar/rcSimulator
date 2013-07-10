@@ -14,6 +14,17 @@
  * Configuration files.
  *
  */
-extern unsigned int PRRConfigValues [][50];
-extern const struct Emulation TaskTypeData[MAX_TASKS_TYPES];
+
+void setTaskTypeDataHWDelay(int id, unsigned int value);
+ void setTaskTypeDataSWDelay(int id, unsigned int value);
+ unsigned int getTaskTypeDataHWDelay(int id);
+ unsigned int getTaskTypeDataSWDelay(int id);
+
+ void setTaskTypeDataConfTime(int id, unsigned int value);
+ void setTaskTypeDataTaskType(int id, unsigned int value);
+ unsigned int getTaskTypeDataConfTime(int id);
+ unsigned int getTaskTypeDataTaskType(int id);
+ void setTaskTypeDataArchNo(int id, unsigned int value);
+ unsigned int getTaskTypeDataArchNo(int id);
+
 #endif /* TMPINITDATA_H_ */

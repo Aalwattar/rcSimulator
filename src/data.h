@@ -9,12 +9,12 @@
 
 
 enum Mode {SWOnly=0x0001,HWOnly=0x0002,HybSW=0x0003,HybHW=0x0013, CustomHW=0x0004,
-	CustomHWnSW=0x0005
+	CustomHWnSW=0x0005, NumMode
 };
-enum Operations {OpAdd,OpSub,OPMult,OpShift,OpBlank};
+enum Operations {OpAdd,OpSub,OPMult,OpShift,OpBlank, NumOperation};
 
-enum PRModules {adder,sub,mult,shift,blank};
-enum PRRID {Math0,Math1,Math2,Math3,Math4};
+enum PRModules {adder,sub,mult,shift,blank, NumPRModules};
+enum PRRID {Math0,Math1,Math2,Math3,Math4,NumPRRID};
 
 
 struct TimerTime
@@ -40,7 +40,7 @@ struct Simulation
 
 struct PRRProcess {
 	int No;
-	enum PRRID PRR_ID[MAX_PR_MODULES];
+	enum PRRID PRR_ID[BUFFER_SIZE];
 };
 
 /* TODO separate this structure into separate structure one is read only and the other is read/write
@@ -91,7 +91,7 @@ struct TaskType{
 	unsigned int  SWET;
 	unsigned int  HWET;
 	int SWPriority;
-	int ConfigTime[MAX_PR_MODULES];
+	int ConfigTime[BUFFER_SIZE];
 	unsigned int  CanRun;
 	enum PRModules Module;
 
@@ -105,10 +105,10 @@ struct tasksTableToken
 	int ID;
 	int size;
 };
-struct DFG {
-	int size;
-	struct node dfg[MAX_NO_OF_NODES];
-};
+//struct DFG {
+//	int size;
+//	struct node dfg[MAX_NO_OF_NODES];
+//};
 
 
 
@@ -121,10 +121,10 @@ struct DFG {
 enum SystemStates {Start,CfgDone,TaskDone,None};
 
 extern enum SystemStates State;
-extern struct DFG DFGArray[];
+//extern struct DFG DFGArray[];
 //extern struct TaskType TasksTypes[];
 
-void Init_TasksTypes(void);
+void Init_TasksTypes(int ,int );
 void reinitTasksTable( int numberOfTasks);
 void CleanTasksTable(void);
 inline unsigned char  isTaskDone(int ID);
@@ -174,5 +174,12 @@ unsigned int  GetNodeNextNode(struct node * dfg , int id);
 unsigned int  GetNodeInitPrio(struct node * dfg , int id);
 unsigned int  GetNodeCanRun(struct node * dfg , int id);
 int  GetNodeTaskType(struct node *dFG, int taskID);
-
+void SetNodeOp1Address(struct node * dfg , int id,int isaddress);
+ void SetNodeOp2Address(struct node * dfg , int id,int isaddress);
+ void SetNodeOp1Value(struct node * dfg , int id,int value);
+ void SetNodeOp2Value(struct node * dfg , int id,int value);
+ void SetNodeID(struct node *dFG, int taskID, int NewID);
+ void SetNodeMode(struct node *dFG, int taskID, enum Mode mode);
+ void SetNodeCanRun(struct node *dFG, int taskID, unsigned int canrun);
+ void SetNodeNext(struct node *dFG, int taskID, int NewID);
 #endif /* DATA_H_ */

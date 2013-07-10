@@ -10,6 +10,7 @@
 #include "data.h"
 #include "PlatformConfig.h"
 #include "tmpInitData.h"
+
 /*FIXME */
 
 
@@ -171,17 +172,17 @@ void setTaskSimPrrUsed(int ID, enum PRRID value )
 
 
 
-void Init_TasksTypes(void)
+void Init_TasksTypes(int numTaskTypes,int numPRRs)
 {
 	int i,k;
-	for (i =0;i<MAX_TASKS_TYPES;i++)
+	for (i =0;i<numTaskTypes;i++)
 	{
 		TasksTypes[i].ID=i;
 		TasksTypes[i].name=0;
 		TasksTypes[i].SWET=0;
 		TasksTypes[i].HWET=0;
-		TasksTypes[i].SWPriority=MAX_PR_MODULES/2 ;
-		for (k=0;k<MAX_PR_MODULES;k++)
+		TasksTypes[i].SWPriority=numPRRs/2 ;
+		for (k=0;k<numPRRs;k++)
 		{
 			TasksTypes[i].ConfigTime[k]=0;
 		}
@@ -317,6 +318,15 @@ unsigned int IsNodeOp2Address(struct node * dfg , int id){
 	return dfg[id].D.isAdd_op2;
 }
 
+void SetNodeOp1Address(struct node * dfg , int id,int isaddress){
+	 dfg[id].D.isAdd_op1=isaddress;
+}
+
+ void SetNodeOp2Address(struct node * dfg , int id,int isaddress){
+	 dfg[id].D.isAdd_op2=isaddress;
+}
+
+
 int GetNodeOp1Value(struct node * dfg , int id){
 	return dfg[id].D.op1;
 }
@@ -325,27 +335,34 @@ int GetNodeOp2Value(struct node * dfg , int id){
 	return dfg[id].D.op2;
 }
 
+void SetNodeOp1Value(struct node * dfg , int id,int value){
+	dfg[id].D.op1=value;
+}
+
+void SetNodeOp2Value(struct node * dfg , int id,int value){
+	 dfg[id].D.op2=value;
+}
 unsigned int GetNodeEmulationHWdelay(struct node * dfg , int id){
 
 
 	if (dfg[id].TypeID <0 || dfg[id].TypeID>=MAX_TASKS_TYPES)
 	{
-		fprintf(stderr,"ERROR [GetNodeEmulationHWdelay] Index out of range [%d] 8\n",dfg[id].TypeID);
+		fprintf(stderr,"ERROR [GetNodeEmulationHWdelay] Index out of range [%d] \n",dfg[id].TypeID);
 				exit(EXIT_FAILURE);
 
 	}
-	return TaskTypeData[dfg[id].TypeID].HWdelay;
+	return getTaskTypeDataHWDelay(dfg[id].TypeID);
 	//return dfg[id].Emu.HWdelay;
 }
 unsigned int GetNodeEmulationSWdelay(struct node * dfg , int id){
 	if (dfg[id].TypeID<0 || dfg[id].TypeID>=MAX_TASKS_TYPES)
 	{
-		fprintf(stderr,"ERROR [GetNodeEmulationSWdelay] Index out of range [%d] 8\n",dfg[id].TypeID);
+		fprintf(stderr,"ERROR [GetNodeEmulationSWdelay] Index out of range [%d] \n",dfg[id].TypeID);
 				exit(EXIT_FAILURE);
 
 	}
 
-	return TaskTypeData[dfg[id].TypeID].SWdelay;
+	return  getTaskTypeDataSWDelay(dfg[id].TypeID);
 	//return dfg[id].Emu.SWdelay;
 }
 
@@ -418,6 +435,48 @@ void SetNodeTaskType(struct node *dFG, int taskID, int NewTypeID)
 	dFG[taskID].TypeID=NewTypeID;
 
 }
+
+
+void SetNodeID(struct node *dFG, int taskID, int NewID)
+{
+	if(0>NewID )
+	{
+		fprintf(stderr,"ERROR [SetNodeID] ID can't be negative \n");
+		exit(EXIT_FAILURE);
+	}
+	dFG[taskID].id=NewID;
+
+}
+void SetNodeNext(struct node *dFG, int taskID, int NewID)
+{
+	if(0>NewID )
+	{
+		fprintf(stderr,"ERROR [SetNodeNext] ID can't be negative \n");
+		exit(EXIT_FAILURE);
+	}
+	dFG[taskID].next=NewID;
+
+}
+void SetNodeMode(struct node *dFG, int taskID, enum Mode mode)
+{
+	if(0>mode  || NumMode>=mode)
+	{
+		fprintf(stderr,"ERROR [SetNodeMode] undefined Mode \n");
+		exit(EXIT_FAILURE);
+	}
+	dFG[taskID].mode=mode;
+
+}
+
+void SetNodeCanRun(struct node *dFG, int taskID, unsigned int canrun)
+{
+
+	dFG[taskID].CanRun=canrun;
+
+}
+
+
+
 
 
 

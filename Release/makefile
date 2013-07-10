@@ -29,7 +29,7 @@ all: librcsSimulator.so
 librcsSimulator.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -shared -Wl,-soname=librcsSimulator.so -o "librcsSimulator.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L/export/home/grad/aalwatta/lib -shared -Wl,-soname=librcsSimulator.so -o "librcsSimulator.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
 

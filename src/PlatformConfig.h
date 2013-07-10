@@ -24,7 +24,7 @@
 #define NO_OF_PRRS 5
 #define NO_OF_GPPS 0
 
-#define MAX_PR_MODULES 5
+#define BUFFER_SIZE 255
 #define MAX_TASKS_TYPES (24+1)
 #define MAX_NO_OF_NODES 200
 #define YES 1

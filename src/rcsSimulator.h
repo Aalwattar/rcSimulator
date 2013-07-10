@@ -8,7 +8,11 @@
 #ifndef RCSSIMULATOR_H_
 #define RCSSIMULATOR_H_
 
-struct SimData {
+#include "common_interfaces.h"
+
+
+struct SimData
+{
 	int dFGID;
 	int noPRR;
 	int noGPP;
@@ -17,7 +21,8 @@ struct SimData {
 
 };
 
-struct SimResults {
+struct SimResults
+{
 	unsigned int totalTime;
 	unsigned int noOfReuse;
 	unsigned int noOfConfiguration;
@@ -30,11 +35,8 @@ struct SimResults {
 
 
 
-
-
-
 void initPRRsConfigTime(unsigned int * prrTime, int noPRRs);
-int InitSimulator();
+int InitSimulator(Common_Interface *);
 int CleanSimulator();
 int RunSimulator(struct SimData *simData, struct SimResults *simResults);
 

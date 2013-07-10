@@ -11,9 +11,9 @@
 #include "processors.h"
 #include "data.h"
 
-static int st[200];
+static int st[BUFFER_SIZE];
 
-static unsigned long ConfigTime[50];
+static unsigned long ConfigTime[BUFFER_SIZE];
 
 //int CreatePRRConfigTimeArray(int noPRR)
 //{
@@ -73,11 +73,11 @@ int ReusePRR_V2(int module, struct PE *pRRs) {
 }
 
 int FindFreePRRPrio(unsigned int mask, struct PE *pRRs) {
-	int count = 0;
+
 	int i;
-	for (i = count; i < pRRs->size; i++) {
+	for (i = pRRs->size-1;i>=0; i--) {
 		if (!IsProcessorBusy(&pRRs->pe[i]) && CanRun(mask, i)) {
-			count++;
+
 #if DEBUG_PRINT
 			fprintf(stderr,"found free PRR %d\n",i);
 #endif
@@ -177,7 +177,6 @@ int MoveDependentTask2TheFront(Queue readyQ,struct node *dFG, int qSize , int t)
 					task1 = tmp;
 					found1 = YES;
 					NoAdd1 = YES;
-
 				}
 			}
 		}
@@ -189,7 +188,6 @@ int MoveDependentTask2TheFront(Queue readyQ,struct node *dFG, int qSize , int t)
 					task2 = tmp;
 					found2 = YES;
 					NoAdd2 = YES;
-
 				}
 			}
 		}
@@ -197,7 +195,6 @@ int MoveDependentTask2TheFront(Queue readyQ,struct node *dFG, int qSize , int t)
 		if (!NoAdd1 && !NoAdd2) {
 			Enqueue(tmp, qtmp);
 		}
-
 	}
 
 	MakeEmpty(readyQ);
@@ -210,7 +207,6 @@ int MoveDependentTask2TheFront(Queue readyQ,struct node *dFG, int qSize , int t)
 	while (!IsEmpty(qtmp)) {
 		tmp = FrontAndDequeue(qtmp);
 		Enqueue(tmp, readyQ);
-
 	}
 
 	DisposeQueue(qtmp);
@@ -273,7 +269,7 @@ int AddTask2Queue(Queue ReadyQ,struct node *dFG, int size) {
 
 	return EXIT_SUCCESS;
 }
-;
+
 
 /*
  * Run task SII
@@ -616,6 +612,15 @@ int SearchReuse(Queue readyQ,  struct PE *pRRs, int qSize, struct node *dFG )
 	DisposeQueue(qtmp);
 	return task;
 
+}
 
-
+unsigned int getConfigTime(int id)
+{
+	if(0>id)
+	{
+		fprintf(stderr,
+						"ERROR [getConfigTime] index can't be negative \n");
+		exit(EXIT_FAILURE);
+	}
+	return ConfigTime[id];
 }
