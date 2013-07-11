@@ -148,12 +148,12 @@ void updateCanRun(struct node *dFG, int numNodes, int numPRRs) {
 	for (i = 0; i < numNodes; i++) {
 		for (j = 0,k=numPRRs-1; numPRRs > j; j++,k--) {
 			if (!i)
-				printf("prr%d->%d \n", j, getConfigTime(j));
+//				printf("prr%d->%d \n", j, getConfigTime(j));
 			if (getConfigTime(k) >= getTaskTypeDataConfTime(dFG[i].TypeID)) {
 				SetNodeCanRun(dFG, i, generateCanRunMask(numPRRs - j));
-				fprintf(stderr, "task %d, canrun %X (%d >%d) \n", i,
-						GetNodeCanRun(dFG, i), getConfigTime(k),
-						getTaskTypeDataConfTime(dFG[i].TypeID));
+//				fprintf(stderr, "task %d, canrun %X (%d >%d) \n", i,
+//						GetNodeCanRun(dFG, i), getConfigTime(k),
+//						getTaskTypeDataConfTime(dFG[i].TypeID));
 				break;
 			} else if (numPRRs==j+1) {
 				fprintf(stderr,

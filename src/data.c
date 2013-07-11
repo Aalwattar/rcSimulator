@@ -429,7 +429,7 @@ void SetNodeTaskType(struct node *dFG, int taskID, int NewTypeID)
 {
 	if(NewTypeID <=0 || NewTypeID>= MAX_TASKS_TYPES)
 	{
-		fprintf(stderr,"ERROR [setNodeTask] Index out of range \n");
+		fprintf(stderr,"ERROR [setNodeTask] Index out of range [%d] \n", NewTypeID);
 		exit(EXIT_FAILURE);
 	}
 	dFG[taskID].TypeID=NewTypeID;

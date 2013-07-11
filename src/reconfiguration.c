@@ -144,7 +144,8 @@ int TickConfiguration( struct Processor *processor)
 		if ( processor->Type !=TypeHW)
 	{
 		fprintf(stderr,"ERROR[TickReconfiguration] You cannot reconfigure a GPP (Are  you sure you know what  you are  doing !!!) %d  \n", processor->Type);
-		return -2;
+        return -2;
+        
 	}
 	if (processor->Busy && !processor->ExecCount && processor->ConfigCount)
 	{

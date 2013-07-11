@@ -108,7 +108,7 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 	int l;
 	for (l = 0; l < dFGsize; l++) {
 		SetNodeTaskType(dFG, l,
-				(Global_local.tableIndexMap[GetNodeTaskType(dFG, l) - 1]
+				(Global_local.tableIndexMap[GetNodeTaskType(dFG, l)]
 						+ simData->typeData[l]));
 	}
 
@@ -192,7 +192,7 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 
 		} while (getTaskCounter());
 
-		print_DFG(dFG, Global_local.noPRRs);
+//		print_DFG(dFG, Global_local.noPRRs);
 		simResults->noHW2SWMigration = counters.HW2SWMig;
 		simResults->noHWBusyCounter = counters.busyCounterHW;
 		simResults->noOfConfiguration = GetConfigCount();
