@@ -90,7 +90,7 @@ static  struct architcture TaskTypeData[BUFFER_SIZE];
  {
 	 if (0>id )
 	 {
-		 fprintf(stderr,"ERROR[getTaskTypeDataHWDelay] can't assign negative number %d -> %d\n",id,TaskTypeData[id].HWdelay);
+		 fprintf(stderr,"ERROR[getTaskTypeDataHWDelay] can't assign negative number %d \n",id);
 		 exit(EXIT_FAILURE);
 	 }
 
@@ -137,7 +137,7 @@ static  struct architcture TaskTypeData[BUFFER_SIZE];
  {
 	 if (0>id )
 	 {
-		 fprintf(stderr,"ERROR[getTaskTypeDataConfTime] can't assign negative number %d -> %d\n",id,TaskTypeData[id].HWdelay);
+		 fprintf(stderr,"ERROR[getTaskTypeDataConfTime] can't assign negative number %d \n",id);
 		 exit(EXIT_FAILURE);
 	 }
 
@@ -172,7 +172,7 @@ static  struct architcture TaskTypeData[BUFFER_SIZE];
  {
 	 if (0>id )
 	 {
-		 fprintf(stderr,"ERROR[getTaskTypeDataArchNo] can't assign negative number %d -> %d\n",id,TaskTypeData[id].HWdelay);
+		 fprintf(stderr,"ERROR[getTaskTypeDataArchNo] can't assign negative number %d \n",id);
 		 exit(EXIT_FAILURE);
 	 }
 
