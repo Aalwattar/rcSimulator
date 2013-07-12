@@ -201,6 +201,7 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 		simResults->noSW2HWMigration = counters.SW2HWMig;
 		simResults->noSWBusyCounter = counters.busyCounterSW;
 		simResults->totalTime = GetTimer();
+        simResults->power = 0; // FIXME - Implement this feature
 
 	}
 	CleanDFG(dFG);
