@@ -42,7 +42,6 @@ void CalculateTaskIndex(Common_Interface*);
 
 
 
-
 int InitSimulator(Common_Interface *mn) { /*FIXME fix tmprrval */
 
 
@@ -73,7 +72,8 @@ int InitSimulator(Common_Interface *mn) { /*FIXME fix tmprrval */
 }
 
 int CleanSimulator() {
-	CleanAllPEs(&Global_local.pEs);
+	CleanAllPEs(&(Global_local.pEs));
+	CleanDFG(Global_local.dFG);
 	/*TODO Clear Global_local.dfg*/
 
 	return 1;
@@ -191,8 +191,10 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 			}
 
 		} while (getTaskCounter());
+if(IS_FLAG_TRUE(simData->flags,PRINT_DFG_DATA))
+{
+		print_DFG(dFG, Global_local.noPRRs);}
 
-//		print_DFG(dFG, Global_local.noPRRs);
 		simResults->noHW2SWMigration = counters.HW2SWMig;
 		simResults->noHWBusyCounter = counters.busyCounterHW;
 		simResults->noOfConfiguration = GetConfigCount();
@@ -201,8 +203,10 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 		simResults->noSW2HWMigration = counters.SW2HWMig;
 		simResults->noSWBusyCounter = counters.busyCounterSW;
 		simResults->totalTime = GetTimer();
+        simResults->power = 0; // FIXME - Implement this feature
 
 	}
+
 	CleanDFG(dFG);
 	CleanTasksTable();
 

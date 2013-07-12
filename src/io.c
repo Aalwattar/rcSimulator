@@ -147,7 +147,7 @@ void updateCanRun(struct node *dFG, int numNodes, int numPRRs) {
 
 	for (i = 0; i < numNodes; i++) {
 		for (j = 0,k=numPRRs-1; numPRRs > j; j++,k--) {
-			if (!i)
+//			if (!i)
 //				printf("prr%d->%d \n", j, getConfigTime(j));
 			if (getConfigTime(k) >= getTaskTypeDataConfTime(dFG[i].TypeID)) {
 				SetNodeCanRun(dFG, i, generateCanRunMask(numPRRs - j));
@@ -181,10 +181,10 @@ void sortDecend (unsigned int *arr, int size ){
 	}
 	for (i=0,j=size;i<size; i++,--j)
 	{
- fprintf(stderr," %u",arr[i]);
+// fprintf(stderr," %u",arr[i]);
 
 	}
-	 fprintf(stderr,"\n");
+//	 fprintf(stderr,"\n");
 }
 
 
