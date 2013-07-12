@@ -28,12 +28,10 @@ int main()
     
     input_data.setup = hardware.setups[2];
     
-	struct SimData simData={.typeData={1,1,1,1,1,1,1,1,1,1,  1,1,1,1,1,1,1,1,1,1, 1,1,1,1,1}};
+	struct SimData simData={.typeData={0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0}};
 	struct SimResults simResults;
 
-	simData.dFGID=0;
-	simData.noGPP=0;
-	simData.noPRR=5;
+
 	simData.noOfNodes=10;
     
 	InitSimulator(&input_data);

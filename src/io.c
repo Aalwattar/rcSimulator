@@ -179,12 +179,7 @@ void sortDecend (unsigned int *arr, int size ){
 		arr[j]=arr[i];
 		arr[i]=tmp;
 	}
-	for (i=0,j=size;i<size; i++,--j)
-	{
-// fprintf(stderr," %u",arr[i]);
 
-	}
-//	 fprintf(stderr,"\n");
 }
 
 
