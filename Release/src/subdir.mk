@@ -4,7 +4,6 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/SchedSim.c \
 ../src/argparse.c \
 ../src/data.c \
 ../src/dfgTemplate.c \
@@ -19,7 +18,6 @@ C_SRCS += \
 ../src/tmpInitData.c 
 
 OBJS += \
-./src/SchedSim.o \
 ./src/argparse.o \
 ./src/data.o \
 ./src/dfgTemplate.o \
@@ -34,7 +32,6 @@ OBJS += \
 ./src/tmpInitData.o 
 
 C_DEPS += \
-./src/SchedSim.d \
 ./src/argparse.d \
 ./src/data.d \
 ./src/dfgTemplate.d \
@@ -53,7 +50,7 @@ C_DEPS += \
 src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	gcc -I$HOME/include -O3 -Wall -c -fmessage-length=0 -fPIC -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	gcc -I/export/home/grad/aalwatta/include -O3 -Wall -c -fmessage-length=0 -fPIC -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

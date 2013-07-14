@@ -8,18 +8,22 @@
 #ifndef ARGPARSE_H_
 #define ARGPARSE_H_
 
+
 #define MAX_NUMBER_NODES 500
+#define BUFFER_SIZE 255
+#define PRR_FILE_NAME  "/export/home/shares/sharegroup1/common_interfaces/src/conf/prr.conf"
+#define ARCH_FILE_NAME "/export/home/shares/sharegroup1/common_interfaces/src/conf/arch.conf"
+#define DFG_FILE_NAME "/export/home/shares/sharegroup1/conf/B2_dfgTemplateB2_25_40_2.conf"
+
 struct ArgData {
-	int NodesNo;
-	int Tasktypes[MAX_NUMBER_NODES];
-	int PRRsNo;
-	int Uniformity;
-	int Sync;
-	int TaskTypeFlag;
-	int DFGNo;
+	char fnDFG[BUFFER_SIZE];
+	char fnPRR[BUFFER_SIZE];
+	char fnArch[BUFFER_SIZE];
+	int PRRsSet;
+	int printDFG;
 
 };
 
 void InitArgdatar(struct ArgData *arg);
-int  parseArgs(int argc, char *argv[],struct ArgData * argdatar);
+int  parseArgs(int argc,  char *argv[],struct ArgData * argdatar);
 #endif /* ARGPARSE_H_ */

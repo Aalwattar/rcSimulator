@@ -53,13 +53,13 @@ inline int CanRun(unsigned int mask, unsigned int prr) {
 	return (mask & (((unsigned int) 1) << prr));
 }
 
-int ReusePRR_V2(int module, struct PE *pRRs) {
+int ReusePRR_V2(int taskType,int arch, struct PE *pRRs) {
 
 	int i;
-	if (module<0)
+	if (taskType<0 || arch < 0)
 		return -1;
 	for (i = 0; i < pRRs->size; i++) {
-		if (pRRs->pe[i].CurrentModule == module
+		if (pRRs->pe[i].CurrentTaskType == taskType && pRRs->pe[i].CurrentArch==arch
 				&& !IsProcessorBusy(&pRRs->pe[i])) {
 #if DEBUG_PRINT
 			fprintf(stderr,"found module %d, reusing %d\n",module,i);
@@ -313,8 +313,9 @@ int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct nod
 		Dequeue(ReadyQ);
 
 		nd.ExecCount = (unsigned int) GetNodeEmulationSWdelay(dFG,task);
-		nd.Module = GetNodeTaskType(dFG,task);
+		nd.TaskType = GetNodeTaskType(dFG,task);
 		nd.TaskID = task;
+		nd.Arch=GetNodeArch(dFG,task);
 		 setTaskSimPrrUsed(task,freeGPP+pes->HWPE->size);
 		LoadProcessor(pes->SWPE->pe+freeGPP, nd);
 		counters->SWTasksCounter++;
@@ -327,9 +328,9 @@ int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct nod
 			task=tmp;
 		}
 		nd.ExecCount = (unsigned int) GetNodeEmulationHWdelay(dFG,task);
-		nd.Module = GetNodeTaskType(dFG,task);
+		nd.TaskType = GetNodeTaskType(dFG,task);
 		nd.TaskID = task;
-
+		nd.Arch=GetNodeArch(dFG,task);
 //		if ((task=SearchReuse(ReadyQ,pes->HWPE,MAX_QUEUE_TASKS))>=0)
 //						{
 //							nd.ExecCount = (unsigned int) GetNodeEmulHWDelay(dFG,task);
@@ -338,7 +339,7 @@ int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct nod
 //
 //						}
 
-		if ((freePRR = ReusePRR_V2(nd.Module, pes->HWPE)) < 0) {
+		if ((freePRR = ReusePRR_V2(nd.TaskType,nd.Arch, pes->HWPE)) < 0) {
 			if (IsReconfiguring()) {
 
 				return 5;
@@ -467,8 +468,9 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 		Dequeue(ReadyQ);
 
 		nd.ExecCount = (unsigned int) GetNodeEmulationSWdelay(dFG,task);
-		nd.Module = GetNodeTaskType(dFG,task);
+		nd.TaskType = GetNodeTaskType(dFG,task);
 		nd.TaskID = task;
+		nd.Arch=GetNodeArch(dFG,task);
 		 setTaskSimPrrUsed(task,freeGPP+pes->HWPE->size);
 		LoadProcessor(pes->SWPE->pe+freeGPP, nd);
 		counters->SWTasksCounter++;
@@ -478,8 +480,9 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 	case HWOnly:
 
 		nd.ExecCount = (unsigned int) GetNodeEmulationHWdelay(dFG,task);
-		nd.Module = GetNodeTaskType(dFG,task);
+		nd.TaskType = GetNodeTaskType(dFG,task);
 		nd.TaskID = task;
+		nd.Arch=GetNodeArch(dFG,task);
 
 #if SW_HW_MIG
 		if (TasksTypes[GetNodeTaskType(dFG,task)].SWPriority == 0
@@ -497,13 +500,14 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 		if ((tmp=SearchReuse(ReadyQ,pes->HWPE,MAX_QUEUE_TASKS, dFG))>=0)
 				{task=tmp;
 					nd.ExecCount = (unsigned int) GetNodeEmulationHWdelay(dFG,task);
-					nd.Module = GetNodeTaskType(dFG,task);
+					nd.TaskType = GetNodeTaskType(dFG,task);
 					nd.TaskID = task;
+					nd.Arch=GetNodeArch(dFG,task);
 
 				}
 
 
-		if ((freePRR = ReusePRR_V2(nd.Module, pes->HWPE)) < 0) {
+		if ((freePRR = ReusePRR_V2(nd.TaskType,nd.Arch, pes->HWPE)) < 0) {
 			if (IsReconfiguring()) {
 				return 5;
 			}
@@ -585,7 +589,7 @@ int SearchReuse(Queue readyQ,  struct PE *pRRs, int qSize, struct node *dFG )
 	while(!IsEmpty(readyQ))
 	{
 		tmp=FrontAndDequeue(readyQ);
-		if ( (ReusePRR_V2(GetNodeTaskType(dFG,tmp), pRRs)) >=0 && !found)
+		if ( (ReusePRR_V2(GetNodeTaskType(dFG,tmp),GetNodeArch(dFG,tmp), pRRs)) >=0 && !found)
 		{
 			task=tmp;
 			found=YES;

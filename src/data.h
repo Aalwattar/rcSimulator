@@ -8,8 +8,11 @@
 
 
 
-enum Mode {SWOnly=0x0001,HWOnly=0x0002,HybSW=0x0003,HybHW=0x0013, CustomHW=0x0004,
-	CustomHWnSW=0x0005, NumMode
+//enum Mode {SWOnly=0x0001,HWOnly=0x0002,HybSW=0x0003,HybHW=0x0013, CustomHW=0x0004,
+//	CustomHWnSW=0x0005, NumMode
+//};
+enum Mode {SWOnly,HWOnly,HybSW,HybHW, CustomHW,
+	CustomHWnSW, NumMode
 };
 enum Operations {OpAdd,OpSub,OPMult,OpShift,OpBlank, NumOperation};
 
@@ -71,7 +74,9 @@ struct node {
 	 struct data D;
 	 unsigned int  initPrio; // initial priority to start with
 	 unsigned int  CanRun;
-	 int TypeID; /* FIXME Change it back to const.  */
+	 int TypeID;
+	 int power;
+	 int arch;
 	 struct Emulation Emu;
 
 };
@@ -93,7 +98,7 @@ struct TaskType{
 	int SWPriority;
 	int ConfigTime[BUFFER_SIZE];
 	unsigned int  CanRun;
-	enum PRModules Module;
+	//enum PRModules Module;
 
 };
 
@@ -182,4 +187,9 @@ void SetNodeOp1Address(struct node * dfg , int id,int isaddress);
  void SetNodeMode(struct node *dFG, int taskID, enum Mode mode);
  void SetNodeCanRun(struct node *dFG, int taskID, unsigned int canrun);
  void SetNodeNext(struct node *dFG, int taskID, int NewID);
+
+ int  GetNodeArch(struct node *dFG, int taskID);
+ void SetNodeArch(struct node *dFG, int taskID, int arch);
+ int  GetNodePower(struct node *dFG, int taskID);
+ void SetNodePower(struct node *dFG, int taskID, int power);
 #endif /* DATA_H_ */

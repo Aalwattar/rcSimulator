@@ -121,7 +121,8 @@ void InitProcessors(struct Processor* processors, int size,enum ProcessorType ty
 	int i;
 	for (i = 0; i < size; i++) {
 		processors[i].Busy = NO;
-		processors[i].CurrentModule = 0;
+		processors[i].CurrentTaskType = 0;
+		processors[i].CurrentArch = 0;
 		processors[i].ExecCount = 0;
 		processors[i].ConfigCount = 0;
 		processors[i].ID = 0;
@@ -166,9 +167,9 @@ void SetProcessorNotBusy( struct Processor *processor)
 	processor->Busy=NO;
 }
 
-int CheckCurrentModule( struct Processor *processor)
+int CheckCurrentTaskType( struct Processor *processor)
 {
-	return processor->CurrentModule;
+	return processor->CurrentTaskType;
 }
 
 
@@ -199,12 +200,13 @@ int LoadProcessor( struct Processor *processor, struct NodeData node )
 	setTaskSimExecTimeStart(node.TaskID,GetTimer());
 
 	processor->Busy=YES;
-	processor->CurrentModule=node.Module; /*TODO fix this */
+	processor->CurrentTaskType=node.TaskType; /*TODO fix this */
+	processor->CurrentArch=node.Arch;
 	processor->ExecCount=node.ExecCount;
 	processor->CurrentTaskID=node.TaskID;
 #if DEBUG_PRINT
 	fprintf(stderr,"loading task [%d] Type [%d] with ExecCount [%lu] \n", \
-			processor->CurrentTaskID, processor->CurrentModule, processor->ExecCount);
+			processor->CurrentTaskID, processor->CurrentTaskType, processor->ExecCount);
 #endif
 	return 0;
 }
@@ -234,16 +236,16 @@ int TickAllProcessors(struct Processor *processor, int size, struct node *dFG)
 #if RCS_SCHED_III
 				if (processor[i].Type==TypeHW)
 				{
-					setTaskTypeHWET(processor[i].CurrentModule, \
-									CalcuateExecTime(getTaskTypeHWET(processor[i].CurrentModule) , GetNodeEmulationHWdelay(dFG,processor[i].CurrentTaskID) ));
+					setTaskTypeHWET(processor[i].CurrentTaskType, \
+									CalcuateExecTime(getTaskTypeHWET(processor[i].CurrentTaskType) , GetNodeEmulationHWdelay(dFG,processor[i].CurrentTaskID) ));
 
 				}else
 				{
-					setTaskTypeSWET(processor[i].CurrentModule,\
-							CalcuateExecTime(getTaskTypeSWET(processor[i].CurrentModule),GetNodeEmulationSWdelay(dFG,processor[i].CurrentTaskID)));
+					setTaskTypeSWET(processor[i].CurrentTaskType,\
+							CalcuateExecTime(getTaskTypeSWET(processor[i].CurrentTaskType),GetNodeEmulationSWdelay(dFG,processor[i].CurrentTaskID)));
 
 				}
-				CalcSWPrio(processor[i].CurrentModule,processor,size);
+				CalcSWPrio(processor[i].CurrentTaskType,processor,size);
 
 #endif
 
