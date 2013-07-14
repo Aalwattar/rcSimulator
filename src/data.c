@@ -187,7 +187,7 @@ void Init_TasksTypes(int numTaskTypes,int numPRRs)
 			TasksTypes[i].ConfigTime[k]=0;
 		}
 		TasksTypes[i].CanRun=0XFF;
-		TasksTypes[i].Module=1;
+	//	TasksTypes[i].Module=1;
 
 	}
 }
@@ -351,8 +351,8 @@ unsigned int GetNodeEmulationHWdelay(struct node * dfg , int id){
 				exit(EXIT_FAILURE);
 
 	}
-	return getTaskTypeDataHWDelay(dfg[id].TypeID);
-	//return dfg[id].Emu.HWdelay;
+//	return getTaskTypeDataHWDelay(dfg[id].TypeID);
+	return dfg[id].Emu.HWdelay;
 }
 unsigned int GetNodeEmulationSWdelay(struct node * dfg , int id){
 	if (dfg[id].TypeID<0 || dfg[id].TypeID>=MAX_TASKS_TYPES)
@@ -362,12 +362,12 @@ unsigned int GetNodeEmulationSWdelay(struct node * dfg , int id){
 
 	}
 
-	return  getTaskTypeDataSWDelay(dfg[id].TypeID);
-	//return dfg[id].Emu.SWdelay;
+//	return  getTaskTypeDataSWDelay(dfg[id].TypeID);
+	return dfg[id].Emu.SWdelay;
 }
 
 void SetNodeEmulationHWdelay(struct node * dfg , int id, unsigned int newValue){
-	if(newValue <=0 )
+	if(newValue <0 )
 		{
 			fprintf(stderr,"ERROR [SetNodeEmulationHWdelay] NEgative number \n");
 			exit(EXIT_FAILURE);
@@ -375,7 +375,7 @@ void SetNodeEmulationHWdelay(struct node * dfg , int id, unsigned int newValue){
 	dfg[id].Emu.HWdelay=newValue;
 }
 void SetNodeEmulationSWdelay(struct node * dfg , int id,unsigned int newValue){
-	if(newValue <=0 )
+	if(newValue <0 )
 		{
 		fprintf(stderr,"ERROR [SetNodeEmulationSWdelay] NEgative number \n");
 			exit(EXIT_FAILURE);
@@ -429,7 +429,7 @@ void SetNodeTaskType(struct node *dFG, int taskID, int NewTypeID)
 {
 	if(NewTypeID <=0 || NewTypeID>= MAX_TASKS_TYPES)
 	{
-		fprintf(stderr,"ERROR [setNodeTask] Index out of range [%d] \n", NewTypeID);
+		fprintf(stderr,"ERROR [setNodeTaskType] Index out of range [%d] id -> %d \n", NewTypeID,taskID);
 		exit(EXIT_FAILURE);
 	}
 	dFG[taskID].TypeID=NewTypeID;
@@ -459,7 +459,7 @@ void SetNodeNext(struct node *dFG, int taskID, int NewID)
 }
 void SetNodeMode(struct node *dFG, int taskID, enum Mode mode)
 {
-	if(0>mode  || NumMode>=mode)
+	if(0>mode  || NumMode<=mode)
 	{
 		fprintf(stderr,"ERROR [SetNodeMode] undefined Mode \n");
 		exit(EXIT_FAILURE);
@@ -475,7 +475,38 @@ void SetNodeCanRun(struct node *dFG, int taskID, unsigned int canrun)
 
 }
 
+int  GetNodeArch(struct node *dFG, int taskID)
+{
 
+	return dFG[taskID].arch;
+
+}
+void SetNodeArch(struct node *dFG, int taskID, int arch)
+{
+	if(arch <0 )
+	{
+		fprintf(stderr,"ERROR [SetNodeArch] can't be negative  \n");
+		exit(EXIT_FAILURE);
+	}
+	dFG[taskID].arch=arch;
+
+}
+int  GetNodePower(struct node *dFG, int taskID)
+{
+
+	return dFG[taskID].power;
+
+}
+void SetNodePower(struct node *dFG, int taskID, int power)
+{
+	if(power <0 )
+	{
+		fprintf(stderr,"ERROR [SetNodePower] can't be negative \n");
+		exit(EXIT_FAILURE);
+	}
+	dFG[taskID].power=power;
+
+}
 
 
 
