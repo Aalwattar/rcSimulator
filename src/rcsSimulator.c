@@ -102,9 +102,11 @@ void loadArchectures(int dFGsize, struct node* dFG, struct SimData* simData) {
 				Global_local.arch->task[GetNodeTaskType(dFG, l) - 1].impl[simData->typeData[l]].exec_time);
 
 		//SetNodePower(dFG,l,Global_local.arch->task[GetNodeTaskType(dFG, l)].impl[simData->typeData[l]].exec_power);
+
 //		fprintf(stderr, "task %d, type %d Ex %d arch %d \n", l,
 //				GetNodeTaskType(dFG, l), GetNodeEmulationHWdelay(dFG, l),
 //				GetNodeArch(dFG, l));
+
 
 	}
 }
