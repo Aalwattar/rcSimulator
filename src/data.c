@@ -162,11 +162,22 @@ void setTaskSimReused(int ID, unsigned char value )
 
 }
 
+int IsTaskSimReused(int taskID )
+{
+	return TasksTable[taskID].Sim.Reused;
+}
 
 void setTaskSimPrrUsed(int ID, enum PRRID value )
 {
 
 	TasksTable[ID].Sim.PRRUsed=value;
+
+}
+
+int getTaskSimPrrUsed(int taskID)
+{
+
+	return TasksTable[taskID].Sim.PRRUsed;
 
 }
 
@@ -505,7 +516,6 @@ void SetNodePower(struct node *dFG, int taskID, int power)
 		exit(EXIT_FAILURE);
 	}
 	dFG[taskID].power=power;
-
 }
 
 

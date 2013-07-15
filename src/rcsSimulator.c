@@ -38,7 +38,7 @@ struct global_rcsSimualator {
 
 static struct global_rcsSimualator Global_local;
 void CalculateTaskIndex(Common_Interface*);
-
+int CalculatePower(struct node *, Architecture_Library *, int );
 
 
 
@@ -58,11 +58,10 @@ int InitSimulator(Common_Interface *mn) { /*FIXME fix tmprrval */
 	}
 
 	CalculateTaskIndex(mn);
-	initTaskTypeData(mn);
+	//initTaskTypeData(mn);
 	Global_local.dFG = CreateDFG(Global_local.dfgSize);
 	convertDFG(Global_local.dFG, &(mn->dfg));
 	pRRConfigValues = init_pRRrConfigValues(tmpprrval, Global_local.noPRRs);
-	//qsort(pRRConfigValues, Global_local.noPRRs, sizeof(unsigned int), cmpfunc);
 	sortDecend (pRRConfigValues, Global_local.noPRRs );
 	CreateAllPEs(&Global_local.pEs, Global_local.noPRRs, Global_local.noGPPs);
 	initPRRsConfigTime(pRRConfigValues, Global_local.noPRRs);
@@ -83,18 +82,21 @@ int CleanSimulator() {
 void loadArchectures(int dFGsize, struct node* dFG, struct SimData* simData) {
 
 	int l;
+	char tmpmode;
 	for (l = 0; l < dFGsize; l++) {
 		//		SetNodeTaskType(dFG, l,
 		//				(Global_local.tableIndexMap[GetNodeTaskType(dFG, l)]
 		//						+ simData->typeData[l]));
 		SetNodeArch(dFG, l, simData->typeData[l]);
+		tmpmode=Global_local.arch->task[GetNodeTaskType(dFG, l) - 1].impl[simData->typeData[l]].mode[0];
+		if ( SWOnly==GetNodeMode(dFG,l))
+		{
+			continue;
+		}
+		if (tmpmode	== 'S'	|| tmpmode == 's') {
 
-		if (Global_local.arch->task[GetNodeTaskType(dFG, l) - 1].impl[simData->typeData[l]].mode[0]
-				== 'S'
-				|| Global_local.arch->task[GetNodeTaskType(dFG, l) - 1].impl[simData->typeData[l]].mode[0]
-						== 's') {
 			fprintf(stderr,
-					"ERROR[RunSimulator] Architecture is not hardware \n");
+					"ERROR[RunSimulator] Architecture is not hardware for task mode \n");
 			exit(EXIT_FAILURE);
 		}
 
@@ -136,7 +138,7 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 	CopyDFG(dFG, Global_local.dFG, dFGsize);
 
 	loadArchectures(dFGsize,  dFG, simData);
-	updateCanRun(dFG,dFGsize,Global_local.noPRRs);
+	updateCanRun(dFG,Global_local.arch,dFGsize,Global_local.noPRRs);
 
 	InitProcessors(Global_local.pEs.HWPE->pe, Global_local.pEs.HWPE->size,
 			TypeHW);
@@ -215,9 +217,9 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 			}
 
 		} while (getTaskCounter());
-if(IS_FLAG_TRUE(simData->flags,PRINT_DFG_DATA))
-{
-		print_DFG(dFG, Global_local.noPRRs);}
+		if (IS_FLAG_TRUE(simData->flags,PRINT_DFG_DATA)) {
+			print_DFG(dFG, Global_local.noPRRs);
+		}
 
 		simResults->noHW2SWMigration = counters.HW2SWMig;
 		simResults->noHWBusyCounter = counters.busyCounterHW;
@@ -227,7 +229,7 @@ if(IS_FLAG_TRUE(simData->flags,PRINT_DFG_DATA))
 		simResults->noSW2HWMigration = counters.SW2HWMig;
 		simResults->noSWBusyCounter = counters.busyCounterSW;
 		simResults->totalTime = GetTimer();
-        simResults->power = 0; // FIXME - Implement this feature
+        simResults->power = CalculatePower(dFG,Global_local.arch,Global_local.noPRRs);
 
 	}
 
@@ -238,6 +240,50 @@ if(IS_FLAG_TRUE(simData->flags,PRINT_DFG_DATA))
 	return 0;
 }
 
+int getSWArch(Architecture_Library *archLib, int tType) {
+	int i;
+	char archMode;
+/* NOTE this picks the first sw arch if there are more than one
+ * Probably it should be changed to pick the last just to be consistent with
+ * other functions (load sw ex time thingy )
+ */
+	for (i = 0; i < archLib->task[tType].num_impl; ++i) {
+		archMode = archLib->task[tType].impl[i].mode[0];
+		if (archMode == 'S' || archMode == 's') {
+			return i;
+		}
+	}
+	return -1;
+}
+
+int CalculatePower(struct node *dFG, Architecture_Library *archLib, int numPRRs) {
+	int index = 0;
+	int totalPower = 0;
+	int taskType;
+	int arch;
+	do {
+		taskType = GetNodeTaskType(dFG, index) - 1;
+		arch = GetNodeArch(dFG, index);
+
+		if (numPRRs <= getTaskSimPrrUsed(index)
+				|| SWOnly == GetNodeMode(dFG, index)) {
+			if (0 > (arch = getSWArch(archLib, taskType))) {
+				fprintf(stderr,
+						"ERROR[CalculatePower] No Software Architecture WHATTTT!!! \n");
+				exit(EXIT_FAILURE);
+			}
+			totalPower += archLib->task[taskType].impl[arch].exec_power;
+			continue;
+		}
+		totalPower += archLib->task[taskType].impl[arch].exec_power;
+		if (IsTaskSimReused(index)) {
+			totalPower += archLib->task[taskType].impl[arch].config_power;
+
+		}
+	} while (GetNodeNextNode(dFG, index++));
+
+	return totalPower;
+}
 void CalculateTaskIndex(Common_Interface* mn) {
 	int i;
 	int sum = 0;
@@ -245,7 +291,6 @@ void CalculateTaskIndex(Common_Interface* mn) {
 
 		Global_local.tableIndexMap[i] = sum;
 		sum += mn->archlib.task[i].num_impl;
-	//	fprintf(stderr, "\t\tarchlib[%d]\n", Global_local.tableIndexMap[i]);
 	}
 
 }
