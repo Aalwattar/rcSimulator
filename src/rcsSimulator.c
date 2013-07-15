@@ -67,6 +67,7 @@ int InitSimulator(Common_Interface *mn) { /*FIXME fix tmprrval */
 	CreateAllPEs(&Global_local.pEs, Global_local.noPRRs, Global_local.noGPPs);
 	initPRRsConfigTime(pRRConfigValues, Global_local.noPRRs);
 
+	 initTaskModeandSWtime(mn, Global_local.dFG);
 	free(pRRConfigValues);
 	return 1;
 }
@@ -77,6 +78,37 @@ int CleanSimulator() {
 	/*TODO Clear Global_local.dfg*/
 
 	return 1;
+}
+
+void loadArchectures(int dFGsize, struct node* dFG, struct SimData* simData) {
+
+	int l;
+	for (l = 0; l < dFGsize; l++) {
+		//		SetNodeTaskType(dFG, l,
+		//				(Global_local.tableIndexMap[GetNodeTaskType(dFG, l)]
+		//						+ simData->typeData[l]));
+		SetNodeArch(dFG, l, simData->typeData[l]);
+
+		if (Global_local.arch->task[GetNodeTaskType(dFG, l) - 1].impl[simData->typeData[l]].mode[0]
+				== 'S'
+				|| Global_local.arch->task[GetNodeTaskType(dFG, l) - 1].impl[simData->typeData[l]].mode[0]
+						== 's') {
+			fprintf(stderr,
+					"ERROR[RunSimulator] Architecture is not hardware \n");
+			exit(EXIT_FAILURE);
+		}
+
+		SetNodeEmulationHWdelay(dFG, l,
+				Global_local.arch->task[GetNodeTaskType(dFG, l) - 1].impl[simData->typeData[l]].exec_time);
+
+		//SetNodePower(dFG,l,Global_local.arch->task[GetNodeTaskType(dFG, l)].impl[simData->typeData[l]].exec_power);
+
+//		fprintf(stderr, "task %d, type %d Ex %d arch %d \n", l,
+//				GetNodeTaskType(dFG, l), GetNodeEmulationHWdelay(dFG, l),
+//				GetNodeArch(dFG, l));
+
+
+	}
 }
 
 int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
@@ -91,8 +123,7 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 	ReadyQ = CreateQueue(MAX_QUEUE_TASKS);
 	Init_TasksTypes(Global_local.arch->num_tasks, Global_local.noPRRs);
 
-	// i = simData->dFGID;
-	//  dFGsize = DFGArray[i].size;
+
 	dFGsize = Global_local.dfgSize;
 	dFG = CreateDFG(dFGsize);
 
@@ -103,15 +134,8 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 	}
 
 	CopyDFG(dFG, Global_local.dFG, dFGsize);
-	/* FIXME temporary measure till  Architecture get implemented by code
-	 * Can Run must be implemented here  */
-	int l;
-	for (l = 0; l < dFGsize; l++) {
-		SetNodeTaskType(dFG, l,
-				(Global_local.tableIndexMap[GetNodeTaskType(dFG, l)]
-						+ simData->typeData[l]));
-	}
 
+	loadArchectures(dFGsize,  dFG, simData);
 	updateCanRun(dFG,dFGsize,Global_local.noPRRs);
 
 	InitProcessors(Global_local.pEs.HWPE->pe, Global_local.pEs.HWPE->size,
@@ -217,7 +241,7 @@ if(IS_FLAG_TRUE(simData->flags,PRINT_DFG_DATA))
 void CalculateTaskIndex(Common_Interface* mn) {
 	int i;
 	int sum = 0;
-	for (i = 0; i < mn->archlib.num_tasks; ++i) {
+	for (i = 0; i <= mn->archlib.num_tasks; ++i) {
 
 		Global_local.tableIndexMap[i] = sum;
 		sum += mn->archlib.task[i].num_impl;

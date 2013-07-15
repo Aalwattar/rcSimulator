@@ -13,9 +13,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include "argparse.h"
-#include "data.h"
 #include "PlatformConfig.h"
+
 
 void displayVersion()
 {
@@ -31,43 +32,38 @@ void displayVersion()
 	 * -n 10 -d 30 -p 33 -u 0 -s 233 -t 1 2 3 4 5
 	 */
 
-  int  parseArgs(int argc, char *argv[],struct ArgData * argdatar){
+  int  parseArgs(int argc,  char *argv[],struct ArgData * argdatar){
 
 
-	   int index;
+
 	   int c;
 	   opterr = 0;
-  argdatar->TaskTypeFlag=0;
-	   while ((c = getopt(argc, argv, "d:n:t:p:u:s:v")) != -1)
+
+	   while ((c = getopt(argc, argv, "d:a:p:s:vV")) != -1)
 		   switch (c) {
-		   case 'n':
-			   argdatar->NodesNo = atoi(optarg);
+		   case 'a':
+			   strcpy( argdatar->fnArch,optarg);
 			   break;
 		   case 'd':
-			   argdatar->DFGNo = atoi(optarg);
+			  strcpy( argdatar->fnDFG,optarg);
 			   break;
 
 		   case 'p':
-			   argdatar->PRRsNo = atoi(optarg);
-			   break;
-		   case 'u':
-			   argdatar->Uniformity = atoi(optarg);
+			   strcpy( argdatar->fnPRR,optarg);
 			   break;
 		   case 's':
-			   argdatar->Sync = atoi(optarg);
+			   argdatar->PRRsSet = atoi(optarg);
+			   break;
+		   case 'v':
+			   argdatar->printDFG=1;
 			   break;
 		   case 'V':
-		   case 'v':
 			   displayVersion();
-			   break;
-		   case 't':
-
-			   argdatar->TaskTypeFlag = 1;
 			   break;
 
 		   case '?':
-			   if (optopt == 'n' || optopt == 'd' || optopt == 'p' || optopt == 'u'
-					   || optopt == 's' || optopt == 't')
+			   if (optopt == 'a' || optopt == 'd' || optopt == 'p'
+					   || optopt == 's' )
 				   fprintf(stderr, "Option -%c requires an argument.\n", optopt);
 			   else if (isprint (optopt))
 				   fprintf(stderr, "Unknown option `-%c'.\n", optopt);
@@ -78,28 +74,19 @@ void displayVersion()
 			   abort();
 		   }
 
-//	   printf(
-//			   "Nodes = %d, PRR = %d, Uniformity = %d , Sync= %d , DFG = %d , TaskTypes = %d \n",
-//			   argdatar->NodesNo, argdatar->PRRsNo, argdatar->Uniformity,
-//			   argdatar->Sync, argdatar->DFGNo, argdatar->TaskTypeFlag);
-	   int i = 0;
-	   for (index = optind - 1; index < argc; index++, i++) {
-		   argdatar->Tasktypes[i] = atoi(argv[index]);
-		  // setNodeTaskType(dFG,i,argdatar);
-		 //  fprintf(stderr,"data  %d   [%d] \n", argdatar->Tasktypes[i], atoi(argv[index]));
 
-	   }
+
 	   return 0;
    }
 
   void InitArgdatar(struct ArgData *arg)
   {
-  	arg->DFGNo=0;
-  	arg->NodesNo=0;
-  	arg->PRRsNo=0;
-  	arg->TaskTypeFlag=0;
-//  	arg->Tasktypes;
-  	arg->Uniformity=0;
+  	arg->PRRsSet=0;
+  	strcpy(arg->fnArch,ARCH_FILE_NAME);
+  	strcpy(arg->fnDFG,DFG_FILE_NAME);
+  	strcpy(arg->fnPRR,PRR_FILE_NAME);
+  	arg->printDFG=0;
+
   }
 
 #endif /* ARGPARSE_C_ */

@@ -38,12 +38,14 @@ int convertDFG(struct node *dFG, DFG *rawDFG)
     }
 
     for (i=0; i<rawDFG->num_nodes; i++) {
+
         SetNodeTaskType(dFG,i,rawDFG->node[i].task_type);
         SetNodeID(dFG,i,i);
         SetNodeMode(dFG,i,HybHW);
         SetNodeCanRun(dFG,i,0xFF);
         SetNodeNext(dFG,i,i+1);
-
+        SetNodeArch(dFG,i,0);
+        SetNodePower(dFG,i,0);
         if(rawDFG->node[i].inputs[0][0]=='r' || rawDFG->node[i].inputs[0][0]=='R') {
 
             SetNodeOp1Value(dFG,i,deparr[strtol(&(rawDFG->node[i].inputs[0][0])+1,NULL,10)]);
@@ -127,6 +129,57 @@ void initTaskTypeData(Common_Interface* mn) {
 //			fprintf(stderr, "Task%d impl%d exe %d\n", index, j,
 //					getTaskTypeDataConfTime(index));
 		}
+
+	}
+}
+
+
+
+void initTaskModeandSWtime(Common_Interface* mn, struct node *dFG) {
+	int j, i;
+	int foundSW = 0, foundHW = 0;
+	char tmpchar;
+
+	int taskType;
+
+	for (i = 0; i < mn->dfg.num_nodes; i++) {
+		taskType = GetNodeTaskType(dFG, i)-1;
+		foundSW = foundHW = NO;
+		for (j = 0; j < mn->archlib.task[taskType].num_impl; ++j) {
+			tmpchar = mn->archlib.task[taskType].impl[j].mode[0];
+
+			if ('S' == tmpchar || 's' == tmpchar) {
+
+				SetNodeEmulationSWdelay(dFG, i,
+						mn->archlib.task[taskType].impl[j].exec_time);
+				foundSW = YES;
+			} else if ('H' == tmpchar || 'h' == tmpchar) {
+				foundHW = YES;
+			} else {
+				fprintf(stderr,
+						"ERROR [initTaskModeandSWtime] Unknown mode in "
+						"arch file task[%d] arch [%d]\n",
+						taskType, j);
+				exit(EXIT_FAILURE);
+			}
+
+
+		}
+		SetNodeEmulationHWdelay(dFG, i, 0);
+		if (foundHW && foundSW) {
+			SetNodeMode(dFG, i, HybHW);
+		} else if (foundSW) {
+			SetNodeMode(dFG, i, SWOnly);
+		} else {
+			SetNodeEmulationSWdelay(dFG, i, 0);
+			SetNodeMode(dFG, i, HWOnly);
+		}
+//		fprintf(stderr, "task %d, type %d  mode [%s] swExec %d HWExec %d\n", i,
+//				taskType + 1,
+//				GetNodeMode(dFG, i) == HybHW ? "HybHW" :
+//				GetNodeMode(dFG, i) == SWOnly ? "SWOnly" : "HWOnly",
+//				GetNodeEmulationSWdelay(dFG, i),
+//				GetNodeEmulationHWdelay(dFG, i));
 
 	}
 }

@@ -4,7 +4,6 @@
 
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
-../src/SchedSim.c \
 ../src/argparse.c \
 ../src/data.c \
 ../src/dfgTemplate.c \
@@ -19,7 +18,6 @@ C_SRCS += \
 ../src/tmpInitData.c 
 
 OBJS += \
-./src/SchedSim.o \
 ./src/argparse.o \
 ./src/data.o \
 ./src/dfgTemplate.o \
@@ -34,7 +32,6 @@ OBJS += \
 ./src/tmpInitData.o 
 
 C_DEPS += \
-./src/SchedSim.d \
 ./src/argparse.d \
 ./src/data.d \
 ./src/dfgTemplate.d \

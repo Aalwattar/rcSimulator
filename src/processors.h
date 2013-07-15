@@ -16,7 +16,8 @@ struct Processor
 	unsigned long ConfigCount;
 	int Busy;
 	int CurrentTaskID;
-	int CurrentModule;
+	int CurrentTaskType;
+	int CurrentArch;
 	unsigned int ID;
 	enum ProcessorType Type;
 
@@ -26,7 +27,8 @@ struct Processor
 
 struct NodeData
 {
-	int Module;
+	int TaskType;
+	int Arch;
 	int TaskID;
 	unsigned long ExecCount;
 };
@@ -51,7 +53,7 @@ struct Processor * CreateProcessors( int , enum ProcessorType );
 int IsProcessorBusy( struct Processor *);
 void SetProcessorBusy( struct Processor *);
 void SetProcessorNotBusy( struct Processor *);
-int CheckCurrentModule( struct Processor *);
+int CheckCurrentTaskType( struct Processor *);
 int TickProcessor( struct Processor *);
 int LoadProcessor( struct Processor *, struct NodeData  );
 int TickAllProcessors(struct Processor *, int , struct node *);

@@ -129,7 +129,7 @@ int ReconfignLoad(struct Processor *processor, int PRRID, unsigned long time, st
 
 	PE=processor;
 	ND.ExecCount=nd.ExecCount;
-	ND.Module=nd.Module;
+	ND.TaskType=nd.TaskType;
 	ND.TaskID=nd.TaskID;
 	LoadTask=YES;
 

@@ -17,4 +17,5 @@ void initTaskTypeData(Common_Interface* );
 void updateCanRun( struct node *dFG, int numNodes,int numPRRs);
 void sortDecend (unsigned int *arr, int size );
 int cmpfunc (const void * a, const void * b);
+void initTaskModeandSWtime(Common_Interface* mn, struct node *dFG) ;
 #endif /* IO_H_ */
