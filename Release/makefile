@@ -29,10 +29,9 @@ all: librcsSimulator.so
 librcsSimulator.so: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L${HOME}/lib -shared -Wl,-soname=librcsSimulator.so -o "librcsSimulator.so" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L/export/home/grad/aalwatta/lib -L../../lib -shared -Wl,-soname=librcsSimulator.so -o "librcsSimulator.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
-	cp librcsSimulator.so ../src/rcsSimulator.h ../../GeneticAlgorithm/libs
 
 # Other Targets
 clean:

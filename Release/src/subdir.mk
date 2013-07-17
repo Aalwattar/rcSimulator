@@ -14,8 +14,7 @@ C_SRCS += \
 ../src/queue.c \
 ../src/rcsSimulator.c \
 ../src/reconfiguration.c \
-../src/schedulers.c \
-../src/tmpInitData.c 
+../src/schedulers.c 
 
 OBJS += \
 ./src/argparse.o \
@@ -28,8 +27,7 @@ OBJS += \
 ./src/queue.o \
 ./src/rcsSimulator.o \
 ./src/reconfiguration.o \
-./src/schedulers.o \
-./src/tmpInitData.o 
+./src/schedulers.o 
 
 C_DEPS += \
 ./src/argparse.d \
@@ -42,15 +40,14 @@ C_DEPS += \
 ./src/queue.d \
 ./src/rcsSimulator.d \
 ./src/reconfiguration.d \
-./src/schedulers.d \
-./src/tmpInitData.d 
+./src/schedulers.d 
 
 
 # Each subdirectory must supply rules for building sources it contributes
 src/%.o: ../src/%.c
 	@echo 'Building file: $<'
 	@echo 'Invoking: GCC C Compiler'
-	gcc -I${HOME}/include -O3 -Wall -c -fmessage-length=0 -fPIC -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
+	gcc -I/export/home/grad/aalwatta/include -I../../include -O3 -Wall -c -fmessage-length=0 -fPIC -MMD -MP -MF"$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -o "$@" "$<"
 	@echo 'Finished building: $<'
 	@echo ' '
 

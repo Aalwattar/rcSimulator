@@ -15,7 +15,14 @@
 #include "dfg_library.h"
 #include "argparse.h"
 
+void zeroSimData(struct SimData *sim, int size)
+{
+	int i;
+	for (i = 0; i < size; ++i) {
+		sim->typeData[i]=0;
 
+	}
+}
 int main(int argc,  char* argv[] )
 {
     Common_Interface input_data;
@@ -33,7 +40,9 @@ int main(int argc,  char* argv[] )
     
     input_data.setup = hardware.setups[argdata.PRRsSet];
     
+
 	struct SimData simData={.typeData={0,0,0,0,0,0,0,0,0,0,  0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0}};
+	zeroSimData(&simData,500);
 	struct SimResults simResults;
 
 	simData.noOfNodes=input_data.dfg.num_nodes;
@@ -42,6 +51,21 @@ int main(int argc,  char* argv[] )
     {
     	SET_FLAG_VALUE(simData.flags,PRINT_DFG_DATA);
     }
+
+    if (argdata.taskMigration)
+    {
+    	SET_FLAG_VALUE(simData.flags,TASK_MIGRATION);
+    }
+
+   simData.iteration= argdata.iteration;
+
+    if(1==argdata.scheduler)
+    	SET_FLAG_VALUE(simData.flags,RCSSCHED_I);
+    else if (2==argdata.scheduler)
+    	SET_FLAG_VALUE(simData.flags,RCSSCHED_II);
+    else
+    	SET_FLAG_VALUE(simData.flags,RCSSCHED_III);
+
 	InitSimulator(&input_data);
 	RunSimulator(&simData,&simResults);
 

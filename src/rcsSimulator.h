@@ -11,14 +11,24 @@
 #include "common_interfaces.h"
 
 #define PRINT_DFG_DATA 0x01
+#define TASK_MIGRATION 0x02
+#define RCSSCHED_I 	   0x04
+#define RCSSCHED_II    0x08
+#define RCSSCHED_III   0x10
+
+
+
+#define QUEUE_SIZE 	   25
+
 #define INIT_FLAGS(flag) ((flag)= 0x0)
 #define SET_FLAG_VALUE(x,flag)  ((x)|=(flag))
-#define IS_FLAG_TRUE(x,flag) ((x)&(flag))
+#define IS_FLAG_TRUE(x,flag) (((x)&(flag))&& 1)
 struct SimData
 {
 	unsigned int flags;
 	int noOfNodes;
 	int typeData[500];
+	int iteration;
 
 };
 

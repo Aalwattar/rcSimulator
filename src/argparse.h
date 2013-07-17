@@ -20,6 +20,9 @@ struct ArgData {
 	char fnPRR[BUFFER_SIZE];
 	char fnArch[BUFFER_SIZE];
 	int PRRsSet;
+	int scheduler;
+	int taskMigration;
+	int iteration;
 	int printDFG;
 
 };

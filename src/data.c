@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include "data.h"
 #include "PlatformConfig.h"
-#include "tmpInitData.h"
 
 /*FIXME */
 

@@ -16,7 +16,6 @@
 #include "displayResults.h"
 #include "drawTaskAllocation.h"
 #include "argparse.h"
-#include "tmpInitData.h"
 #include "rcsSimulator.h"
 #include "common_interfaces.h"
 #include "io.h"
@@ -37,8 +36,8 @@ struct global_rcsSimualator {
 };
 
 static struct global_rcsSimualator Global_local;
-void CalculateTaskIndex(Common_Interface*);
-int CalculatePower(struct node *, Architecture_Library *, int );
+void calculateTaskIndex(Common_Interface*);
+int calculatePower(struct node *, Architecture_Library *, int );
 
 
 
@@ -57,7 +56,7 @@ int InitSimulator(Common_Interface *mn) { /*FIXME fix tmprrval */
 		tmpprrval[i] = mn->setup.prr_config_time[i];
 	}
 
-	CalculateTaskIndex(mn);
+	calculateTaskIndex(mn);
 	//initTaskTypeData(mn);
 	Global_local.dFG = CreateDFG(Global_local.dfgSize);
 	convertDFG(Global_local.dFG, &(mn->dfg));
@@ -117,6 +116,7 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 
 	struct node *dFG;
 	int dFGsize = 0;
+	int (*schedule)(Queue , struct Counts *, struct PEs *, struct node *, int)=NULL;
 
 	Queue ReadyQ;
 	static struct Counts counters = { 0, 0, 0, 0, 0, 0 };
@@ -146,7 +146,22 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 			TypeSW);
 	RstCounters(&counters);
 
-	for (w = 0; w < NO_OF_DFG_REP; w++) {
+	if (IS_FLAG_TRUE(simData->flags,RCSSCHED_I)) {
+		schedule = RCSchedI;
+	} else if (IS_FLAG_TRUE(simData->flags,RCSSCHED_II)) {
+		schedule = RCSchedII;
+	} else if (IS_FLAG_TRUE(simData->flags,RCSSCHED_III)) {
+		schedule = RCSchedIII;
+
+	} else {
+		fprintf(stderr,
+				"ERROR[RunSimulator] You should enable one simulator  \n");
+		exit(EXIT_FAILURE);
+	}
+
+
+
+	for (w = 0; w < simData->iteration; w++) {
 #if  SCHED_I_EN
 		Init_Rand_Prr(AVAILABLE_PRR);
 #endif
@@ -171,6 +186,7 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 		 * Start Processing DFG
 		 */
 
+
 		do {
 			/*
 			 * TODO Cannot remember Why I have these three states!! Might be
@@ -179,34 +195,19 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 			 */
 			switch (State) {
 			case CfgDone:
-#if  RCS_SCHED_I
-				RunTaskSI(ReadyQ,&counters;
-#elif RCS_SCHED_III
-				RCSchedIII(ReadyQ, &counters, &Global_local.pEs, dFG);
-#elif RCS_SCHED_II
-				RCSchedII(ReadyQ, &counters, &pEs,dFG);
-#endif
+
+				schedule(ReadyQ, &counters, &Global_local.pEs, dFG,IS_FLAG_TRUE(simData->flags,TASK_MIGRATION));
 				Ticker(&Global_local.pEs, dFG);
 				State = TaskDone;
 				break;
 			case TaskDone:
 				AddTask2Queue(ReadyQ, dFG, dFGsize);
-
-#if  RCS_SCHED_I
-				RunTaskSI(ReadyQ,&counters);
-#elif RCS_SCHED_III
-
-				RCSchedIII(ReadyQ, &counters, &Global_local.pEs, dFG);
-#elif RCS_SCHED_II
-
-				RCSchedII(ReadyQ, &counters, &pEs);
-#endif
+				schedule(ReadyQ, &counters, &Global_local.pEs, dFG,IS_FLAG_TRUE(simData->flags,TASK_MIGRATION));
 				Ticker(&Global_local.pEs, dFG);
 				State = TaskDone;
 				break;
 			case Start:
 				AddTask2Queue(ReadyQ, dFG, dFGsize);
-
 				State = TaskDone;
 				break;
 			case None:
@@ -229,15 +230,14 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 		simResults->noSW2HWMigration = counters.SW2HWMig;
 		simResults->noSWBusyCounter = counters.busyCounterSW;
 		simResults->totalTime = GetTimer();
-        simResults->power = CalculatePower(dFG,Global_local.arch,Global_local.noPRRs);
+        simResults->power = calculatePower(dFG,Global_local.arch,Global_local.noPRRs);
 
 	}
 
 	CleanDFG(dFG);
 	CleanTasksTable();
-
 	DisposeQueue(ReadyQ);
-	return 0;
+return EXIT_SUCCESS;
 }
 
 int getSWArch(Architecture_Library *archLib, int tType) {
@@ -256,7 +256,7 @@ int getSWArch(Architecture_Library *archLib, int tType) {
 	return -1;
 }
 
-int CalculatePower(struct node *dFG, Architecture_Library *archLib, int numPRRs) {
+int calculatePower(struct node *dFG, Architecture_Library *archLib, int numPRRs) {
 	int index = 0;
 	int totalPower = 0;
 	int taskType;
@@ -284,7 +284,7 @@ int CalculatePower(struct node *dFG, Architecture_Library *archLib, int numPRRs)
 
 	return totalPower;
 }
-void CalculateTaskIndex(Common_Interface* mn) {
+void calculateTaskIndex(Common_Interface* mn) {
 	int i;
 	int sum = 0;
 	for (i = 0; i <= mn->archlib.num_tasks; ++i) {

@@ -24,7 +24,7 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.exe.debug.2064874350." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.exe.debug.1161477493" name="Linux GCC" nonInternalBuilderId="cdt.managedbuild.target.gnu.builder.exe.debug" superClass="cdt.managedbuild.toolchain.gnu.exe.debug">
 							<targetPlatform id="cdt.managedbuild.target.gnu.platform.exe.debug.1871699382" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.exe.debug"/>
-							<builder autoBuildTarget="all" buildPath="${workspace_loc:/SchedSim}/Debug" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.1608065318" incrementalBuildTarget="all" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
+							<builder autoBuildTarget="all" buildPath="${workspace_loc:/SchedSim}/Debug" cleanBuildTarget="clean" id="org.eclipse.cdt.build.core.internal.builder.1608065318" incrementalBuildTarget="all" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1243955341" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug.1485956312" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.exe.debug">
 								<option id="gnu.cpp.compiler.exe.debug.option.optimization.level.47833305" name="Optimization Level" superClass="gnu.cpp.compiler.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
@@ -107,6 +107,7 @@
 								<option id="gnu.c.compiler.option.misc.pic.1434129779" name="Position Independent Code (-fPIC)" superClass="gnu.c.compiler.option.misc.pic" value="true" valueType="boolean"/>
 								<option id="gnu.c.compiler.option.include.paths.1027934796" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/export/home/grad/aalwatta/include"/>
+									<listOptionValue builtIn="false" value="../../include"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.13543167" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -115,6 +116,7 @@
 								<option id="gnu.c.link.option.soname.1091417178" name="Shared object name (-Wl,-soname=)" superClass="gnu.c.link.option.soname" value="librcsSimulator.so" valueType="string"/>
 								<option id="gnu.c.link.option.paths.279835766" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="/export/home/grad/aalwatta/lib"/>
+									<listOptionValue builtIn="false" value="../../lib"/>
 								</option>
 								<option id="gnu.c.link.option.libs.871363763" name="Libraries (-l)" superClass="gnu.c.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="confuse"/>
