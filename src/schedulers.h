@@ -37,9 +37,10 @@
 
 
  int SearchReuse(Queue readyQ, struct PE *pRRs, int qSize , struct node *);
- int RCSchedIIIEn(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *);
-int RCSchedII(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct node *);
-int RCSchedIII(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct node *);
+
+int RCSchedI(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct node *,int);
+int RCSchedII(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct node *,int);
+int RCSchedIII(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct node *,int);
 int AddTask2Queue(Queue ReadyQ, struct node *,int size);
 void RstCounters(struct Counts* counters);
 unsigned int getConfigTime(int id);

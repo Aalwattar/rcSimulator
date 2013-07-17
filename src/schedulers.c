@@ -57,7 +57,10 @@ int ReusePRR_V2(int taskType,int arch, struct PE *pRRs) {
 
 	int i;
 	if (taskType<0 || arch < 0)
-		return -1;
+	{
+		fprintf(stderr,"ERROR [ReusePRR_V1] taskType/arch cannot be negative \n");
+		exit (EXIT_FAILURE);
+	}
 	for (i = 0; i < pRRs->size; i++) {
 		if (pRRs->pe[i].CurrentTaskType == taskType && pRRs->pe[i].CurrentArch==arch
 				&& !IsProcessorBusy(&pRRs->pe[i])) {
@@ -71,6 +74,29 @@ int ReusePRR_V2(int taskType,int arch, struct PE *pRRs) {
 
 	return -1;
 }
+
+int ReusePRR_V1(int taskType,int arch, struct PE *pRRs,int prr) {
+
+
+	if (taskType<0 || arch < 0)
+	{
+		fprintf(stderr,"ERROR [ReusePRR_V1] taskType/arch cannot be negative \n");
+		exit (EXIT_FAILURE);
+	}
+
+		if (pRRs->pe[prr].CurrentTaskType == taskType && pRRs->pe[prr].CurrentArch==arch
+				&& !IsProcessorBusy(&pRRs->pe[prr])) {
+#if DEBUG_PRINT
+			fprintf(stderr,"found module %d, reusing %d\n",module,i);
+#endif
+
+			return 1;
+		}
+
+
+	return -1;
+}
+
 
 int FindFreePRRPrio(unsigned int mask, struct PE *pRRs) {
 
@@ -88,6 +114,24 @@ int FindFreePRRPrio(unsigned int mask, struct PE *pRRs) {
 
 	return -1;
 }
+
+int FindFreePRRSimple(unsigned int mask, struct PE *pRRs) {
+
+	int i;
+	for (i = 0;i<pRRs->size; i++) {
+		if (!IsProcessorBusy(&pRRs->pe[i]) && CanRun(mask, i)) {
+
+#if DEBUG_PRINT
+			fprintf(stderr,"found free PRR %d\n",i);
+#endif
+
+			return i;
+		}
+	}
+
+	return -1;
+}
+
 
 int FindFreeGPP(unsigned int mask, struct PE *GPPs) {
 
@@ -107,10 +151,12 @@ int FindFreeGPP(unsigned int mask, struct PE *GPPs) {
 
 
 int FindFreePRRBestCase(unsigned int mask, struct PE *pRRs) {
-	static int count = 0;
+	static int count =0;
+
+	if (!count) count=pRRs->size-1;
 
 	int i;
-	for (i = count; i < pRRs->size; i++) {
+	for (i = count; i >0 ; --i) {
 		if (!IsProcessorBusy(&pRRs->pe[i]) && CanRun(mask, i)) {
 #if DEBUG_PRINT
 			fprintf(stderr,"found free PRR %d\n",i);
@@ -119,10 +165,11 @@ int FindFreePRRBestCase(unsigned int mask, struct PE *pRRs) {
 			return i;
 		}
 	}
+	count=i;
 
 	if (count >= pRRs->size - 1) {
 
-		count = 0;
+		count = i < pRRs->size-1;
 	}
 	//fprintf(stderr,"NOT found free PRR B\n");
 	return -1;
@@ -274,7 +321,137 @@ int AddTask2Queue(Queue ReadyQ,struct node *dFG, int size) {
 /*
  * Run task SII
  */
-int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG) {
+int RCSchedI(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int taskMig) {
+	int task;
+
+	struct NodeData nd;
+	int freePRR = 0;
+	int freeGPP=0;
+	if (IsEmpty(ReadyQ))
+		return QEmpty;
+	task = Front(ReadyQ);
+
+	switch (getTaskMode(task)) {
+
+	case HybSW:
+
+	case SWOnly:
+
+		if ((freeGPP=FindFreeGPP(0xFF,pes->SWPE))<0) {
+
+#if SW_HW_MIG
+			if (getTaskMode(task) == HybSW && taskMig) {
+				setTaskMode(task, HybHW);
+				counters->SW2HWMig++;
+#if DEBUG_PRINT
+				fprintf(stderr,"Task %d migrate from SW to Any\n",task);
+#endif
+			} else {
+#endif
+				counters->busyCounterSW++;
+				return BUSY;
+			}
+
+#if SW_HW_MIG
+		}
+#endif
+		Dequeue(ReadyQ);
+
+		nd.ExecCount = (unsigned int) GetNodeEmulationSWdelay(dFG,task);
+		nd.TaskType = GetNodeTaskType(dFG,task);
+		nd.TaskID = task;
+		nd.Arch=GetNodeArch(dFG,task);
+		setTaskSimPrrUsed(task,freeGPP+pes->HWPE->size);
+		LoadProcessor(pes->SWPE->pe+freeGPP, nd);
+		counters->SWTasksCounter++;
+		break;
+
+	case HybHW:
+	case HWOnly:
+//		if ((tmp=SearchReuse(ReadyQ,pes->HWPE,MAX_QUEUE_TASKS,dFG))>=0)
+//		{
+//			task=tmp;
+//		}
+		nd.ExecCount = (unsigned int) GetNodeEmulationHWdelay(dFG,task);
+		nd.TaskType = GetNodeTaskType(dFG,task);
+		nd.TaskID = task;
+		nd.Arch=GetNodeArch(dFG,task);
+
+
+
+		if (IsReconfiguring()) {
+
+					return 5;
+				}
+
+			if ((freePRR = FindFreePRRBestCase(
+					getTaskTypeCanRun(GetNodeTaskType(dFG,task)), pes->HWPE)) < 0)
+
+					{
+
+#if SW_HW_MIG
+				if ( FindFreeGPP(0xFF,pes->SWPE)>=0
+						&& getTaskMode(task) == HybHW && taskMig) {
+					setTaskMode(task, HybSW);
+					counters->HW2SWMig++;
+#if DEBUG_PRINT
+					fprintf(stderr,"Task %d migrate from HW to SW\n",task);
+#endif
+					return 0;
+				} else {
+#endif
+
+					counters->busyCounterHW++;
+					return BUSY;
+#if SW_HW_MIG
+				}
+#endif
+			}else if (( ReusePRR_V1(nd.TaskType,nd.Arch, pes->HWPE,freePRR)) < 0) {
+
+
+			Dequeue(ReadyQ);
+	        setTaskSimPrrUsed(task,freePRR);
+	        setTaskSimReused(task,NO);
+	        setTaskSimConfTimeStart(task,GetTimer());
+
+
+			ReconfignLoad(pes->HWPE->pe + freePRR, freePRR, ConfigTime[freePRR],
+					nd);
+
+			break;
+
+		} else // find reuse
+
+		{
+			counters->ReuseCounter++;
+			 setTaskSimPrrUsed(task,freePRR);
+		     setTaskSimReused(task,YES);
+
+			Dequeue(ReadyQ);
+		}
+#if DEBUG_PRINT
+		fprintf(stderr,"Using PRR MATH%d for task [%d]\n",freePRR,task);
+#endif
+
+		LoadProcessor(pes->HWPE->pe + freePRR, nd);
+		break;
+
+	case CustomHW:
+	case CustomHWnSW:
+	default:
+		fprintf(stderr,
+				"ERROR [RunTask] Unsupported mode check your DFG file .. Exiting\n");
+		return EXIT_FAILURE;
+	}
+
+
+	return EXIT_SUCCESS;
+}
+
+/*
+ * Run task SII
+ */
+int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int taskMig) {
 	int task,tmp;
 
 	struct NodeData nd;
@@ -295,7 +472,7 @@ int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct nod
 		if ((freeGPP=FindFreeGPP(0xFF,pes->SWPE))<0) {
 
 #if SW_HW_MIG
-			if (getTaskMode(task) == HybSW) {
+			if (getTaskMode(task) == HybSW && taskMig) {
 				setTaskMode(task, HybHW);
 				counters->SW2HWMig++;
 #if DEBUG_PRINT
@@ -344,18 +521,14 @@ int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct nod
 
 				return 5;
 			}
-#if SCHED_II_WORSTCASE
-			if((freePRR=FindFreePRROrig(PRR_T.CanRun))<0)
-#elif  SCHED_II_RANDOM
-			if((freePRR=FindFreePRR(PRR_T.CanRun))<0)
-#else
+
 			if ((freePRR = FindFreePRRBestCase(
 					getTaskTypeCanRun(GetNodeTaskType(dFG,task)), pes->HWPE)) < 0)
-#endif
+
 					{
 #if SW_HW_MIG
 				if ( FindFreeGPP(0xFF,pes->SWPE)>=0
-						&& getTaskMode(task) == HybHW) {
+						&& getTaskMode(task) == HybHW && taskMig) {
 					setTaskMode(task, HybSW);
 					counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -426,7 +599,7 @@ void RstCounters(struct Counts* counters) {
 /*
  * Run task SIII
  */
-int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG) {
+int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int taskMig) {
 	int task,tmp;
 
 
@@ -449,8 +622,10 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 		 */
 		if ((freeGPP=FindFreeGPP(0xFF,pes->SWPE))<0) {
 
+
 #if SW_HW_MIG
-			if (getTaskMode(task) == HybSW) {
+			if (getTaskMode(task) == HybSW && taskMig) {
+
 				setTaskMode(task, HybHW);
 				counters->SW2HWMig++;
 #if DEBUG_PRINT
@@ -485,9 +660,9 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 		nd.Arch=GetNodeArch(dFG,task);
 
 #if SW_HW_MIG
-		if (TasksTypes[GetNodeTaskType(dFG,task)].SWPriority == 0
+		if (getTaskTypeSWPrio(GetNodeTaskType(dFG,task)) == 0
 				&& FindFreeGPP(0xFF,pes->SWPE)>=0
-				&& getTaskMode(task) == HybHW) {
+				&& getTaskMode(task) == HybHW && taskMig) {
 			setTaskMode(task, HybSW);
 			counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -515,7 +690,7 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 					getTaskTypeCanRun(GetNodeTaskType(dFG,task)), pes->HWPE)) < 0) {
 #if SW_HW_MIG
 				if (FindFreeGPP(0xFF,pes->SWPE)>=0
-						&& getTaskMode(task) == HybHW) {
+						&& getTaskMode(task) == HybHW && taskMig) {
 					setTaskMode(task, HybSW);
 					counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -532,9 +707,9 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 #endif
 			}
 #if SW_HW_MIG
-			else if (TasksTypes[GetNodeTaskType(dFG,task)].SWPriority <= freePRR
+			else if (getTaskTypeSWPrio(GetNodeTaskType(dFG,task)) <= freePRR
 					&& FindFreeGPP(0xFF,pes->SWPE)>=0
-					&& getTaskMode(task) == HybHW) {
+					&& getTaskMode(task) == HybHW && taskMig) {
 				setTaskMode(task, HybSW);
 				counters->HW2SWMig++;
 				return EXIT_SUCCESS;
