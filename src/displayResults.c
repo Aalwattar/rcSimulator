@@ -12,7 +12,6 @@
 
 
 
-
 void print_DFG(struct node * dFG, int noPRRs)
 {
 
@@ -44,5 +43,7 @@ void print_DFG(struct node * dFG, int noPRRs)
               printf(" Total Conf Time [%4u] , \n",	totalConfT);
 
 }
+
+
 
 

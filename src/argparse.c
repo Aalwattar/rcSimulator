@@ -12,6 +12,7 @@
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <getopt.h>
 #include <unistd.h>
 #include <string.h>
 #include "argparse.h"
@@ -24,6 +25,23 @@ void displayVersion()
 	exit(EXIT_SUCCESS);
 }
 
+char displaymsg []={" usage  %s  [options] prog-and-args\n\n"
+		"tool-selection option, with default in [ ]:\n\n"
+		"-h --help \t\t show this message\n"
+		"-V --version \t\t display version \n"
+		"-v --verbose \t\t show node execution details  \n"
+		"-i --iteration \t\t number of iteration to run a DFG [1]  \n"
+		"-t --task-migration \t\t enable task migration [0]  \n"
+		"-k --scheduler \t\t pick scheduler (1-3) [3]  \n"
+		"-d --dfg-file  \t\t followed by the DFG file to be processed [dfg.conf]\n"
+		"-a --arch-file \t\t followed by architecture file to be processed [arch.conf]\n"
+		"-p --prr-file  \t\t followed by PRR files (contains PRR combination) [prr.conf]\n"
+		"-s --prrs-set \t\t integer to pick which PRR set to use from the PRR file [0]\n\n"};
+
+void displayHelp(char *programName)
+{
+	fprintf(stdout, displaymsg,programName);
+}
 /*
 	 * * FIXME  THIS FUNCTION NEED TO BE CHANGED COMPLETELY
 	 * Does not check any error conditions,
@@ -32,20 +50,36 @@ void displayVersion()
 	 * -n 10 -d 30 -p 33 -u 0 -s 233 -t 1 2 3 4 5
 	 */
 
+static struct option long_options[] = {
+     {"dfg-file",   required_argument,   	 	  0,  'd' },
+     {"arch-file",	required_argument,     		  0,  'a' },
+     {"prr-file",  required_argument,			  0,  'p' },
+     {"prrs-set",   required_argument, 			  0,  's' },
+     {"scheduler",   required_argument, 		  0,  'k' },
+     {"verbose",   no_argument,					  0,  'v' },
+     {"iteration",   required_argument, 		  0,  'i' },
+     {"task-migration",   no_argument, 			  0,  't' },
+     {"version",   no_argument, 				  0,  'V' },
+     {"help",      no_argument, 				  0,  'h' },
+     {0,           0,                 0,  0   }
+ };
+
   int  parseArgs(int argc,  char *argv[],struct ArgData * argdatar){
 
 
 
 	   int c;
 	   opterr = 0;
-
-	   while ((c = getopt(argc, argv, "d:a:p:s:vV")) != -1)
+	int long_index=0;
+	   while ((c = getopt_long(argc, argv, "d:a:p:i:s:k:vVth",
+			   	   long_options,&long_index)) != -1)
 		   switch (c) {
 		   case 'a':
 			   strcpy( argdatar->fnArch,optarg);
 			   break;
 		   case 'd':
 			  strcpy( argdatar->fnDFG,optarg);
+
 			   break;
 
 		   case 'p':
@@ -54,13 +88,31 @@ void displayVersion()
 		   case 's':
 			   argdatar->PRRsSet = atoi(optarg);
 			   break;
+		   case 'i':
+		  		argdatar->iteration = atoi(optarg);
+
+		  	 break;
+		   case 'k':
+		 		 argdatar->scheduler = atoi(optarg);
+			if (argdatar->scheduler < 1 || argdatar->scheduler > 3) {
+				fprintf(stderr,"Error scheduler value should be 1 - 3 \n");
+				exit(EXIT_FAILURE);
+			}
+		 			   break;
 		   case 'v':
 			   argdatar->printDFG=1;
+			   break;
+
+		   case 't':
+			   argdatar->taskMigration=1;
 			   break;
 		   case 'V':
 			   displayVersion();
 			   break;
-
+		   case 'h':
+			   displayHelp(argv[0]);
+			   exit(EXIT_SUCCESS);
+			   break;
 		   case '?':
 			   if (optopt == 'a' || optopt == 'd' || optopt == 'p'
 					   || optopt == 's' )
@@ -69,6 +121,7 @@ void displayVersion()
 				   fprintf(stderr, "Unknown option `-%c'.\n", optopt);
 			   else
 				   fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
+
 			   return 1;
 		   default:
 			   abort();
@@ -86,6 +139,9 @@ void displayVersion()
   	strcpy(arg->fnDFG,DFG_FILE_NAME);
   	strcpy(arg->fnPRR,PRR_FILE_NAME);
   	arg->printDFG=0;
+  	arg->scheduler=3 ;
+  	arg->iteration=1;
+  	arg->taskMigration=0;
 
   }
 

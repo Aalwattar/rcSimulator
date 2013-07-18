@@ -11,7 +11,7 @@
 #include "data.h"
 #include "PlatformConfig.h"
 #include "schedulers.h"
-#include "tmpInitData.h"
+#include "common_interfaces.h"
 
 #include "io.h"
 
@@ -105,33 +105,33 @@ void initPRRsConfigTime(unsigned int * prrTime, int noPRRs)
     }
 }
 
-void initTaskTypeData(Common_Interface* mn) {
-	int j, i, index = 1;
-	for (i = 0; i < mn->archlib.num_tasks; ++i) {
-
-		for (j = 0; j < mn->archlib.task[i].num_impl; ++j, index++) {
-
-			setTaskTypeDataArchNo(index,j);
-			setTaskTypeDataTaskType(index,i);
-			if (mn->archlib.task[i].impl[j].mode[0] == 'H') {
-
-				setTaskTypeDataHWDelay(index,
-				mn->archlib.task[i].impl[j].exec_time);
-				setTaskTypeDataSWDelay(index, 0);
-				setTaskTypeDataConfTime(index,mn->archlib.task[i].impl[j].config_time);
-			} else {
-				setTaskTypeDataSWDelay(index,
-						mn->archlib.task[i].impl[j].exec_time);
-				setTaskTypeDataHWDelay(index, 0);
-				setTaskTypeDataConfTime(index,0);
-			}
-
-//			fprintf(stderr, "Task%d impl%d exe %d\n", index, j,
-//					getTaskTypeDataConfTime(index));
-		}
-
-	}
-}
+//void initTaskTypeData(Common_Interface* mn) {
+//	int j, i, index = 1;
+//	for (i = 0; i < mn->archlib.num_tasks; ++i) {
+//
+//		for (j = 0; j < mn->archlib.task[i].num_impl; ++j, index++) {
+//
+//			setTaskTypeDataArchNo(index,j);
+//			setTaskTypeDataTaskType(index,i);
+//			if (mn->archlib.task[i].impl[j].mode[0] == 'H') {
+//
+//				setTaskTypeDataHWDelay(index,
+//				mn->archlib.task[i].impl[j].exec_time);
+//				setTaskTypeDataSWDelay(index, 0);
+//				setTaskTypeDataConfTime(index,mn->archlib.task[i].impl[j].config_time);
+//			} else {
+//				setTaskTypeDataSWDelay(index,
+//						mn->archlib.task[i].impl[j].exec_time);
+//				setTaskTypeDataHWDelay(index, 0);
+//				setTaskTypeDataConfTime(index,0);
+//			}
+//
+////			fprintf(stderr, "Task%d impl%d exe %d\n", index, j,
+////					getTaskTypeDataConfTime(index));
+//		}
+//
+//	}
+//}
 
 
 
@@ -194,31 +194,32 @@ unsigned int generateCanRunMask( unsigned int prr)
     return mask;
 }
 
-void updateCanRun(struct node *dFG, int numNodes, int numPRRs) {
+void updateCanRun(struct node *dFG,  Architecture_Library *archLib, int numNodes, int numPRRs) {
 
 	int j, i,k;
 
 	for (i = 0; i < numNodes; i++) {
 		for (j = 0,k=numPRRs-1; numPRRs > j; j++,k--) {
-//			if (!i)
-//				printf("prr%d->%d \n", j, getConfigTime(j));
-			if (getConfigTime(k) >= getTaskTypeDataConfTime(dFG[i].TypeID)) {
+
+			if (getConfigTime(k) >= archLib->task[GetNodeTaskType(dFG,i)-1].impl[GetNodeArch(dFG,i)].config_time ) {
 				SetNodeCanRun(dFG, i, generateCanRunMask(numPRRs - j));
 //				fprintf(stderr, "task %d, canrun %X (%d >%d) \n", i,
 //						GetNodeCanRun(dFG, i), getConfigTime(k),
-//						getTaskTypeDataConfTime(dFG[i].TypeID));
+//						archLib->task[GetNodeTaskType(dFG,i)-1].impl[GetNodeArch(dFG,i)].config_time);
 				break;
 			} else if (numPRRs==j+1) {
 				fprintf(stderr,
 						"ERROR [updateCanRun] Task %d Cannot fit in any PRR\n",
 						i);
-				fprintf(stderr, "ERR task %d, canrun %X (%d >%d) \n", i,
-						GetNodeCanRun(dFG, i), getConfigTime(j),
-						getTaskTypeDataConfTime(dFG[i].TypeID));
+//				fprintf(stderr, "ERR task %d, canrun %X (%d >%d) \n", i,
+//						GetNodeCanRun(dFG, i), getConfigTime(j),
+//						archLib->task[GetNodeTaskType(dFG,i)-1].impl[GetNodeArch(dFG,i)].config_time);
+
 				exit(EXIT_FAILURE);
 			}
 		}
 	}
+
 }
 
 void sortDecend (unsigned int *arr, int size ){

@@ -9,20 +9,17 @@
 #define PLATFROMCONFIG_H_
 
 
-#define VERSION_NUMBER "0.2.0"
+#define VERSION_NUMBER "0.3.0"
 
 #define GRAPH_FILE "./graph"
 
 #define NO_OF_DFG_REP 1
-#define NO_OF_DFGS 10
 #define INDEPENDENT_DFGS 1
 
 #define RCS_SCHED_I 0
 #define RCS_SCHED_III 1
 #define RCS_SCHED_II 0
 
-#define NO_OF_PRRS 5
-#define NO_OF_GPPS 0
 
 #define BUFFER_SIZE 255
 #define MAX_TASKS_TYPES (24+1)
@@ -32,7 +29,7 @@
 
 #define MAX_QUEUE_TASKS 25
 
-#define SW_HW_MIG 0
+#define SW_HW_MIG 1 // should be one all the time (to control) task migration use command line argument
 
 #define EXEC_TIME_LEARNING_RATIO 0.2
 
@@ -40,7 +37,7 @@
 #define DEBUG_PRINT 0
 
 #define SCALING 5
-#define COMMAND_LINE_READ 1
+
 
 
 /*

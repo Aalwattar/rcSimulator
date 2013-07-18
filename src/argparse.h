@@ -12,7 +12,7 @@
 #define MAX_NUMBER_NODES 500
 #define BUFFER_SIZE 255
 #define PRR_FILE_NAME  "/export/home/shares/sharegroup1/common_interfaces/src/conf/prr.conf"
-#define ARCH_FILE_NAME "/export/home/shares/sharegroup1/common_interfaces/src/conf/arch.conf"
+#define ARCH_FILE_NAME "/export/home/shares/sharegroup1/common_interfaces/src/conf/arch_exp1.conf"
 #define DFG_FILE_NAME "/export/home/shares/sharegroup1/conf/B2_dfgTemplateB2_25_40_2.conf"
 
 struct ArgData {
@@ -20,6 +20,9 @@ struct ArgData {
 	char fnPRR[BUFFER_SIZE];
 	char fnArch[BUFFER_SIZE];
 	int PRRsSet;
+	int scheduler;
+	int taskMigration;
+	int iteration;
 	int printDFG;
 
 };

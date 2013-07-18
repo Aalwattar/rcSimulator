@@ -160,7 +160,8 @@ inline void setTaskTypeSWPrio (int ID,int value);
 inline unsigned  int getTaskTypeCanRun( int ID);
 inline void setTaskTypeCanRun (int ID,unsigned int value);
 void SetNodeTaskType(struct node *dFG, int taskID, int NewTypeID);
-
+int IsTaskSimReused(int  );
+int getTaskSimPrrUsed(int );
 
 struct node * CreateDFG(int size);
 void CleanDFG(struct node * dfg);
@@ -192,4 +193,5 @@ void SetNodeOp1Address(struct node * dfg , int id,int isaddress);
  void SetNodeArch(struct node *dFG, int taskID, int arch);
  int  GetNodePower(struct node *dFG, int taskID);
  void SetNodePower(struct node *dFG, int taskID, int power);
+
 #endif /* DATA_H_ */
