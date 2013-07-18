@@ -32,6 +32,8 @@ librcsSimulator.so: $(OBJS) $(USER_OBJS)
 	gcc -L/export/home/grad/aalwatta/lib -shared -Wl,-soname=librcsSimulator.so -o "librcsSimulator.so" $(OBJS) $(USER_OBJS) $(LIBS)
 	@echo 'Finished building target: $@'
 	@echo ' '
+	cp librcsSimulator.so ../../../lib
+	cp ../src/rcsSimulator.h ../../../include
 
 # Other Targets
 clean:
