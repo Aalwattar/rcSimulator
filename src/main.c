@@ -10,9 +10,6 @@
 #include <confuse.h>
 #include  "rcsSimulator.h"
 #include  "common_interfaces.h"
-#include "architecture_library.h"
-#include "hardware_library.h"
-#include "dfg_library.h"
 #include "argparse.h"
 
 void zeroSimData(struct SimData *sim, int size)
