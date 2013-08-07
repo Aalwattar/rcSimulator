@@ -34,9 +34,18 @@ int main(int argc,  char* argv[] )
 		exit(EXIT_FAILURE);
 	}
     
-    initArchLibrary(argdata.fnArch, &(input_data.archlib));
-    initDFG(argdata.fnDFG, &(input_data.dfg));
-    initHardwareLibrary(argdata.fnPRR, &hardware);
+   if (  initArchLibrary(argdata.fnArch, &(input_data.archlib)))
+   { fprintf(stderr,"ERROR reading file .. exiting \n");
+   	  exit (EXIT_FAILURE);
+   }
+   if ( initDFG(argdata.fnDFG, &(input_data.dfg)))
+   { fprintf(stderr,"ERROR reading file .. exiting \n");
+      	  exit (EXIT_FAILURE);
+      }
+    if (initHardwareLibrary(argdata.fnPRR, &hardware))
+    { fprintf(stderr,"ERROR reading file .. exiting \n");
+       	  exit (EXIT_FAILURE);
+       }
     
     input_data.setup = hardware.setups[argdata.PRRsSet];
     
@@ -55,6 +64,11 @@ int main(int argc,  char* argv[] )
     if (argdata.taskMigration)
     {
     	SET_FLAG_VALUE(simData.flags,TASK_MIGRATION);
+    }
+
+    if (argdata.taskGraph)
+    {
+    	SET_FLAG_VALUE(simData.flags,GENERATE_TASK_GRAPH);
     }
 
    simData.iteration= argdata.iteration;
@@ -83,18 +97,18 @@ int main(int argc,  char* argv[] )
 			simResults.noOfSWTasks);
 	fprintf(stdout, "Total Power is {%d}  \n", simResults.power);
 	fprintf(stdout,"_________________________________________________________________\n");
-	RunSimulator(&simData,&simResults);
-
-	fprintf(stdout, "Process complete in {%d} cycles \n", simResults.totalTime);
-	fprintf(stdout,
-			"Number of configuration= %u SW Busy [%u] HW Busy [%u]\n",
-			simResults.noOfConfiguration, simResults.noSWBusyCounter,
-			simResults.noHWBusyCounter);
-	fprintf(stdout,
-			"SW2HW MIG [%u]  HW2SW Mig [%u] #of Reuse [%u]  #SW tasks [%u]\n",
-			simResults.noSW2HWMigration, simResults.noHW2SWMigration, simResults.noOfReuse,
-			simResults.noOfSWTasks);
-	fprintf(stdout, "Total Power is {%d}  \n", simResults.power);
+//	RunSimulator(&simData,&simResults);
+//
+//	fprintf(stdout, "Process complete in {%d} cycles \n", simResults.totalTime);
+//	fprintf(stdout,
+//			"Number of configuration= %u SW Busy [%u] HW Busy [%u]\n",
+//			simResults.noOfConfiguration, simResults.noSWBusyCounter,
+//			simResults.noHWBusyCounter);
+//	fprintf(stdout,
+//			"SW2HW MIG [%u]  HW2SW Mig [%u] #of Reuse [%u]  #SW tasks [%u]\n",
+//			simResults.noSW2HWMigration, simResults.noHW2SWMigration, simResults.noOfReuse,
+//			simResults.noOfSWTasks);
+//	fprintf(stdout, "Total Power is {%d}  \n", simResults.power);
 	CleanSimulator();
     freeArchLibrary(&(input_data.archlib));
     freeDFG(&(input_data.dfg));

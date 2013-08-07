@@ -11,7 +11,7 @@ enum ProcessorType {TypeHW, TypeSW};
 
 
 struct Processor
-{
+{	unsigned long ConfigTime; // Used to calc softprio for rcsSChedIII
 	unsigned long ExecCount;
 	unsigned long ConfigCount;
 	int Busy;

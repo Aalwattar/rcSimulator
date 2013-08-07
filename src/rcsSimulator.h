@@ -15,7 +15,7 @@
 #define RCSSCHED_I 	   0x04
 #define RCSSCHED_II    0x08
 #define RCSSCHED_III   0x10
-
+#define GENERATE_TASK_GRAPH 0x20
 
 
 #define QUEUE_SIZE 	   25

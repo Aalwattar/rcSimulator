@@ -96,7 +96,7 @@ struct TaskType{
 	unsigned int  SWET;
 	unsigned int  HWET;
 	int SWPriority;
-	int ConfigTime[BUFFER_SIZE];
+//	int ConfigTime[BUFFER_SIZE];
 	unsigned int  CanRun;
 	//enum PRModules Module;
 
@@ -157,6 +157,8 @@ inline unsigned int getTaskTypeSWET( int ID);
 inline void setTaskTypeSWET (int ID,unsigned int value);
 inline  int getTaskTypeSWPrio( int ID);
 inline void setTaskTypeSWPrio (int ID,int value);
+//inline unsigned int getTaskTypeConfigTime( int ID, int pRRID);
+//inline void setTaskTypeConfigTime (int ID,int pRRID, unsigned int value);
 inline unsigned  int getTaskTypeCanRun( int ID);
 inline void setTaskTypeCanRun (int ID,unsigned int value);
 void SetNodeTaskType(struct node *dFG, int taskID, int NewTypeID);

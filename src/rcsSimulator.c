@@ -221,7 +221,28 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 		if (IS_FLAG_TRUE(simData->flags,PRINT_DFG_DATA)) {
 			print_DFG(dFG, Global_local.noPRRs);
 		}
+		if (IS_FLAG_TRUE(simData->flags,GENERATE_TASK_GRAPH)) {
 
+		struct Draw ** graph;
+		unsigned int graphtime;
+		FILE *fdGraph; // tex file to show the allocations of task on each PE
+		char fileNameST[255];
+		sprintf(fileNameST, "%s_dfg_%d_it_%d.txt", GRAPH_FILE, Global_local.dfgSize, w);
+		fdGraph = fopen(fileNameST, "w");
+		if (!fdGraph) {
+			fprintf(stderr, "ERROR[main] Cannot open File %s\n", fileNameST);
+			exit(EXIT_FAILURE);
+		}
+
+		graphtime = GetTimer() / SCALING;
+		graph = CreateDraw(graphtime + 1,
+				Global_local.noGPPs + Global_local.noPRRs);
+		GenerateGraph(graph, dFG, SCALING,Global_local.noPRRs);
+		DrawGraph(graph, graphtime, fdGraph, Global_local.noPRRs,
+				Global_local.noGPPs);
+		CleanDraw(graph, graphtime + 1);
+		fclose(fdGraph);
+		}
 		simResults->noHW2SWMigration = counters.HW2SWMig;
 		simResults->noHWBusyCounter = counters.busyCounterHW;
 		simResults->noOfConfiguration = GetConfigCount();

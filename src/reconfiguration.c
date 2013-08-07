@@ -105,7 +105,7 @@ int Reconfigure(struct Processor *processor, int PRRID, unsigned long time)
 
 	ReconfigPRRID=PRRID;
 	Reconfiguring = YES;
-
+	processor->ConfigTime=time;
 	processor->ConfigCount=time;
 	processor->ExecCount= 0;
 	processor->Busy=YES;
@@ -143,7 +143,8 @@ int TickConfiguration( struct Processor *processor)
 
 		if ( processor->Type !=TypeHW)
 	{
-		fprintf(stderr,"ERROR[TickReconfiguration] You cannot reconfigure a GPP (Are  you sure you know what  you are  doing !!!) %d  \n", processor->Type);
+		fprintf(stderr,"ERROR[TickReconfiguration] You cannot reconfigure a GPP "
+				"(Something really wrong just happened!!) %d  \n", processor->Type);
         return -2;
         
 	}
