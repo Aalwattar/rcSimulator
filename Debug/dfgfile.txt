@@ -1,0 +1,10 @@
+B1_dfgTemplate10_5_2.conf
+B1_dfgTemplate25_10_2.conf
+B1_dfgTemplate50_50_2.conf
+B1_dfgTemplate100_150_2.conf
+B1_dfgTemplate150_200_2.conf
+B2_dfgTemplateB2_25_40_2.conf
+B2_dfgTemplateB2_50_60_2.conf
+B2_dfgTemplateB2_100_120_2.conf
+B2_dfgTemplateB2_150_200_2.conf
+B2_dfgTemplateB2_200_60_2.conf

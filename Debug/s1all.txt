@@ -1,0 +1,9 @@
+Process complete in {2362} cycles 
+Number of configuration= 13 SW Busy [0] HW Busy [0]
+SW2HW MIG [0]  HW2SW Mig [0] #of Reuse [12]  #SW tasks [0]
+Total Power is {1545}  
+_________________________________________________________________
+Process complete in {2362} cycles 
+Number of configuration= 13 SW Busy [0] HW Busy [0]
+SW2HW MIG [0]  HW2SW Mig [0] #of Reuse [12]  #SW tasks [0]
+Total Power is {1545}  
