@@ -30,6 +30,7 @@ char displaymsg []={" usage  %s  [options] prog-and-args\n\n"
 		"-h --help \t\t show this message\n"
 		"-V --version \t\t display version \n"
 		"-v --verbose \t\t show node execution details  \n"
+		"-g --task-graph \t\t Generate task graph file   \n"
 		"-i --iteration \t\t number of iteration to run a DFG [1]  \n"
 		"-t --task-migration \t\t enable task migration [0]  \n"
 		"-k --scheduler \t\t pick scheduler (1-3) [3]  \n"
@@ -57,6 +58,7 @@ static struct option long_options[] = {
      {"prrs-set",   required_argument, 			  0,  's' },
      {"scheduler",   required_argument, 		  0,  'k' },
      {"verbose",   no_argument,					  0,  'v' },
+     {"task-graph",   no_argument,				  0,  'g' },
      {"iteration",   required_argument, 		  0,  'i' },
      {"task-migration",   no_argument, 			  0,  't' },
      {"version",   no_argument, 				  0,  'V' },
@@ -71,7 +73,7 @@ static struct option long_options[] = {
 	   int c;
 	   opterr = 0;
 	int long_index=0;
-	   while ((c = getopt_long(argc, argv, "d:a:p:i:s:k:vVth",
+	   while ((c = getopt_long(argc, argv, "d:a:p:i:s:k:vVthg",
 			   	   long_options,&long_index)) != -1)
 		   switch (c) {
 		   case 'a':
@@ -102,7 +104,9 @@ static struct option long_options[] = {
 		   case 'v':
 			   argdatar->printDFG=1;
 			   break;
-
+		   case 'g':
+			   argdatar->taskGraph=1;
+			   break;
 		   case 't':
 			   argdatar->taskMigration=1;
 			   break;
@@ -121,7 +125,7 @@ static struct option long_options[] = {
 				   fprintf(stderr, "Unknown option `-%c'.\n", optopt);
 			   else
 				   fprintf(stderr, "Unknown option character `\\x%x'.\n", optopt);
-
+			   displayHelp(argv[0]);
 			   return 1;
 		   default:
 			   abort();
@@ -142,6 +146,7 @@ static struct option long_options[] = {
   	arg->scheduler=3 ;
   	arg->iteration=1;
   	arg->taskMigration=0;
+  	arg->taskGraph=0;
 
   }
 

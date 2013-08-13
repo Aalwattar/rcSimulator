@@ -156,20 +156,25 @@ int FindFreePRRBestCase(unsigned int mask, struct PE *pRRs) {
 	if (!count) count=pRRs->size-1;
 
 	int i;
-	for (i = count; i >0 ; --i) {
+	for (i = count; i >=0 ; --i) {
 		if (!IsProcessorBusy(&pRRs->pe[i]) && CanRun(mask, i)) {
 #if DEBUG_PRINT
 			fprintf(stderr,"found free PRR %d\n",i);
 #endif
 
+			if ((i)<0)
+			{
+				fprintf(stderr,"ERROR [FindFreePRRBestCase] NEGATIVE i !!");
+				exit(EXIT_FAILURE);
+			}
+
 			return i;
 		}
 	}
 	count=i;
+	if (count<=0) {
 
-	if (count >= pRRs->size - 1) {
-
-		count = i < pRRs->size-1;
+		count =pRRs->size-1;
 	}
 	//fprintf(stderr,"NOT found free PRR B\n");
 	return -1;
@@ -330,6 +335,11 @@ int RCSchedI(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node
 	if (IsEmpty(ReadyQ))
 		return QEmpty;
 	task = Front(ReadyQ);
+
+	if (IsReconfiguring()) {
+		return 5;
+	}
+
 
 	switch (getTaskMode(task)) {
 
@@ -617,9 +627,7 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 	case HybSW:
 
 	case SWOnly:
-		/*
-		 * FIXME this has to be changed to accommodate more than one GPPs
-		 */
+
 		if ((freeGPP=FindFreeGPP(0xFF,pes->SWPE))<0) {
 
 
@@ -663,6 +671,8 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 		if (getTaskTypeSWPrio(GetNodeTaskType(dFG,task)) == 0
 				&& FindFreeGPP(0xFF,pes->SWPE)>=0
 				&& getTaskMode(task) == HybHW && taskMig) {
+//			fprintf(stderr," Task migration task %d prio %d\n",task,
+//					getTaskTypeSWPrio(GetNodeTaskType(dFG,task)));
 			setTaskMode(task, HybSW);
 			counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -691,6 +701,8 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 #if SW_HW_MIG
 				if (FindFreeGPP(0xFF,pes->SWPE)>=0
 						&& getTaskMode(task) == HybHW && taskMig) {
+//					fprintf(stderr," Task migration task %d prio %d\n",task,
+//										getTaskTypeSWPrio(GetNodeTaskType(dFG,task)));
 					setTaskMode(task, HybSW);
 					counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -707,11 +719,13 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 #endif
 			}
 #if SW_HW_MIG
-			else if (getTaskTypeSWPrio(GetNodeTaskType(dFG,task)) <= freePRR
+			else if (getTaskTypeSWPrio(GetNodeTaskType(dFG,task)) <= abs(((pes->HWPE->size-1)-freePRR))
 					&& FindFreeGPP(0xFF,pes->SWPE)>=0
 					&& getTaskMode(task) == HybHW && taskMig) {
 				setTaskMode(task, HybSW);
 				counters->HW2SWMig++;
+//				fprintf(stderr," Task migration task %d prio %d freePRR %d\n",task,
+//									getTaskTypeSWPrio(GetNodeTaskType(dFG,task)),abs(((pes->HWPE->size-1)-freePRR)));
 				return EXIT_SUCCESS;
 #if DEBUG_PRINT
 				fprintf(stderr,"tasks [%d] moved to software due to priority \n",task);

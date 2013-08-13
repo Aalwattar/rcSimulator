@@ -25,7 +25,7 @@ struct Draw ** CreateDraw(unsigned int time, int noPE);
 void CleanDraw(struct Draw ** graph, unsigned int time);
 unsigned int CheckMaxSize(struct node *dFG) ;
 void DrawGraph(struct Draw **graph, unsigned int time, FILE *fd, int noPRR, int noGPP);
-void GenerateGraph(struct Draw **graph, struct node *dFG, int scale);
+void GenerateGraph(struct Draw **graph, struct node *dFG, int scale,int);
 void InitDraw(struct Draw ** graph, unsigned int time, int noPE);
 
 #endif /* DRAWTASKALLOCATION_H_ */

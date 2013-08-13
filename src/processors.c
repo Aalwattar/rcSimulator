@@ -81,7 +81,9 @@ void ResetTimer(void)
  	ratio=(((double) (int ) ((int )new - (int )orig)) * EXEC_TIME_LEARNING_RATIO);
  tmp=((int ) orig+ (int ) ratio);
 
- 	return tmp;
+
+ return tmp;
+// return new;
  }
 
 
@@ -93,17 +95,17 @@ void ResetTimer(void)
 
  	if(getTaskTypeSWET(ID)<getTaskTypeHWET(ID))
  	{
+// 		fprintf(stderr,"changing prio to zero for task %d\n",ID);
  		setTaskTypeSWPrio(ID,0);
  		return;
  	}
 
 
-
  	for (i=0 ; i<size ;i++)
  	{
 
- 		if(processor[i].ConfigCount==0) continue;
- 		if (getTaskTypeSWET(ID) <= (getTaskTypeHWET(ID)+processor[i].ConfigCount))
+ 		if(processor[i].ConfigTime==0) continue;
+ 		if (getTaskTypeSWET(ID) <= (getTaskTypeHWET(ID)+processor[i].ConfigTime))
  		{
  			setTaskTypeSWPrio(ID,i);
  			return;
@@ -125,6 +127,7 @@ void InitProcessors(struct Processor* processors, int size,enum ProcessorType ty
 		processors[i].CurrentArch = 0;
 		processors[i].ExecCount = 0;
 		processors[i].ConfigCount = 0;
+		processors[i].ConfigTime = 0;
 		processors[i].ID = 0;
 		processors[i].Type = type;
 		processors[i].ID = i;
@@ -234,18 +237,24 @@ int TickAllProcessors(struct Processor *processor, int size, struct node *dFG)
 				 * they simply does not make any sense.
 				 */
 #if RCS_SCHED_III
-				if (processor[i].Type==TypeHW)
-				{
-					setTaskTypeHWET(processor[i].CurrentTaskType, \
-									CalcuateExecTime(getTaskTypeHWET(processor[i].CurrentTaskType) , GetNodeEmulationHWdelay(dFG,processor[i].CurrentTaskID) ));
+			if (processor[i].Type == TypeHW) {
+				setTaskTypeHWET(processor[i].CurrentTaskType,
+						CalcuateExecTime(
+								getTaskTypeHWET(processor[i].CurrentTaskType),
+								GetNodeEmulationHWdelay(dFG,
+										processor[i].CurrentTaskID)));
 
-				}else
-				{
-					setTaskTypeSWET(processor[i].CurrentTaskType,\
-							CalcuateExecTime(getTaskTypeSWET(processor[i].CurrentTaskType),GetNodeEmulationSWdelay(dFG,processor[i].CurrentTaskID)));
+			} else {
+				setTaskTypeSWET(processor[i].CurrentTaskType,
+						CalcuateExecTime(
+								getTaskTypeSWET(processor[i].CurrentTaskType),
+								GetNodeEmulationSWdelay(dFG,
+										processor[i].CurrentTaskID)));
 
-				}
-				CalcSWPrio(processor[i].CurrentTaskType,processor,size);
+			}
+
+
+			CalcSWPrio(processor[i].CurrentTaskType, processor, size);
 
 #endif
 

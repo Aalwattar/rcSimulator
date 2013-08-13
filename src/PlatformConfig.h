@@ -27,7 +27,7 @@
 #define YES 1
 #define NO 0
 
-#define MAX_QUEUE_TASKS 25
+#define MAX_QUEUE_TASKS 250
 
 #define SW_HW_MIG 1 // should be one all the time (to control) task migration use command line argument
 
@@ -36,7 +36,7 @@
 
 #define DEBUG_PRINT 0
 
-#define SCALING 5
+#define SCALING 50
 
 
 

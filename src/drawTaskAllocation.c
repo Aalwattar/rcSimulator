@@ -34,7 +34,7 @@ struct Draw ** CreateDraw(unsigned int time, int noPE) {
 	int i = 0, j;
 	struct Draw ** graph;
 
-	graph = (struct Draw **) malloc(sizeof(struct Draw *) * time);
+	graph =  malloc(sizeof(struct Draw *) * time);
 	if (!graph) {
 		fprintf(stderr, "ERROR [initDraw]  Error allocating memory \n");
 		exit(EXIT_FAILURE);
@@ -99,6 +99,7 @@ void DrawGraph(struct Draw **graph, unsigned int time, FILE *fd, int noPRR, int 
 		fprintf(fd, "\tPRR%d", j);
 	}
 
+	fprintf(stderr,"noGPP %d\n",noGPP);
 	for (j = 0; j < noGPP; j++) {
 		if (!j) {
 			fprintf(fd, "\tGPP%d", j);
@@ -125,13 +126,13 @@ void DrawGraph(struct Draw **graph, unsigned int time, FILE *fd, int noPRR, int 
 		for (j = 0; j < noGPP; j++) {
 			if (!j)
 
-				if (graph[i][j].mode == Empty) {
+				if (graph[i][j+noPRR].mode == Empty) {
 					fprintf(fd, "\t......");
 					continue;
 				}
-			fprintf(fd, "\t%u%s", graph[i][j].ID,
-					graph[i][j].mode == Reconfig ? "#####" :
-					graph[i][j].mode == Exec ? "*****" : ".....");
+			fprintf(fd, "\t%u%s", graph[i][j+noPRR].ID,
+					graph[i][j+noPRR].mode == Reconfig ? "#####" :
+					graph[i][j+noPRR].mode == Exec ? "*****" : ".....");
 		}
 
 		fprintf(fd, "\n");
@@ -139,7 +140,7 @@ void DrawGraph(struct Draw **graph, unsigned int time, FILE *fd, int noPRR, int 
 	}
 }
 
-void GenerateGraph(struct Draw **graph, struct node *dFG, int scale) {
+void GenerateGraph(struct Draw **graph, struct node *dFG, int scale,int noPRRs) {
 	int i = 0, j = 0;
 	unsigned int tmpConfigTime;
 	unsigned int tmpExecTime;
@@ -149,7 +150,7 @@ void GenerateGraph(struct Draw **graph, struct node *dFG, int scale) {
 	do {
 		getTaskSimulation(i, &sim);
 
-		if (!sim.Reused) {
+		if (!sim.Reused && sim.PRRUsed<noPRRs) {
 			tmpConfigTime =  sim.ConfigTime.end - sim.ConfigTime.start;
 
 			for (j = lroundf((float)sim.ConfigTime.start / scale);
@@ -158,8 +159,12 @@ void GenerateGraph(struct Draw **graph, struct node *dFG, int scale) {
 				graph[j][sim.PRRUsed].Type = GetNodeTaskType(dFG,i);
 				graph[j][sim.PRRUsed].mode = Reconfig;
 
+
 			}
+
 		}
+
+
 
 		tmpExecTime = sim.ExecTime.end - sim.ExecTime.start;
 		for (j = lroundf((float)sim.ExecTime.start / scale);
@@ -169,6 +174,7 @@ void GenerateGraph(struct Draw **graph, struct node *dFG, int scale) {
 			graph[j][sim.PRRUsed].mode = Exec;
 		}
 
+			//fprintf(stderr,"prr used %d conf time %d\n",sim.PRRUsed,tmpExecTime);
 	} while (GetNodeNextNode(dFG,i++));
 
 }

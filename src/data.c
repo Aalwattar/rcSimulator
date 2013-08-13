@@ -192,10 +192,10 @@ void Init_TasksTypes(int numTaskTypes,int numPRRs)
 		TasksTypes[i].SWET=0;
 		TasksTypes[i].HWET=0;
 		TasksTypes[i].SWPriority=numPRRs/2 ;
-		for (k=0;k<numPRRs;k++)
-		{
-			TasksTypes[i].ConfigTime[k]=0;
-		}
+//		for (k=0;k<numPRRs;k++)
+//		{
+//			TasksTypes[i].ConfigTime[k]=0;
+//		}
 		TasksTypes[i].CanRun=0XFF;
 	//	TasksTypes[i].Module=1;
 
@@ -227,6 +227,25 @@ inline void setTaskTypeHWET (int ID,unsigned int  value)
 	TasksTypes[ID].HWET=value;
 }
 
+//inline unsigned int getTaskTypeConfigTime( int ID, int pRRID)
+//{
+//	if(ID <=0 || ID>= MAX_TASKS_TYPES)
+//	{
+//		fprintf(stderr,"ERROR [TasksTypes] Index out of range 3\n");
+//		exit(EXIT_FAILURE);
+//	}
+//	return TasksTypes[ID].ConfigTime[pRRID];
+//}
+//
+//inline void setTaskTypeConfigTime (int ID,int pRRID, unsigned int value)
+//{
+//	if(ID <=0 || ID>= MAX_TASKS_TYPES)
+//	{
+//		fprintf(stderr,"ERROR [TasksTypes] Index out of range 4\n");
+//		exit(EXIT_FAILURE);
+//	}
+//	TasksTypes[ID].ConfigTime[pRRID]=value;
+//}
 
 inline unsigned int getTaskTypeSWET( int ID)
 {
