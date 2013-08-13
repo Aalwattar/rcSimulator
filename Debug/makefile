@@ -29,7 +29,7 @@ all: SchedSim
 SchedSim: $(OBJS) $(USER_OBJS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc -L/export/home/grad/aalwatta/lib -lm -pg -o "SchedSim" $(OBJS) $(USER_OBJS) $(LIBS)
+	gcc -L/export/home/grad/aalwatta/lib -L../../../lib -lm -pg -o "SchedSim" $(OBJS) $(USER_OBJS) $(LIBS) -lcommonInterfaces -lm
 	@echo 'Finished building target: $@'
 	@echo ' '
 
