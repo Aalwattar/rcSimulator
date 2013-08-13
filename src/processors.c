@@ -95,7 +95,7 @@ void ResetTimer(void)
 
  	if(getTaskTypeSWET(ID)<getTaskTypeHWET(ID))
  	{
- 		fprintf(stderr,"changing prio to zero for task %d\n",ID);
+// 		fprintf(stderr,"changing prio to zero for task %d\n",ID);
  		setTaskTypeSWPrio(ID,0);
  		return;
  	}

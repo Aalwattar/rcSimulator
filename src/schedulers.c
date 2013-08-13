@@ -671,8 +671,8 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 		if (getTaskTypeSWPrio(GetNodeTaskType(dFG,task)) == 0
 				&& FindFreeGPP(0xFF,pes->SWPE)>=0
 				&& getTaskMode(task) == HybHW && taskMig) {
-			fprintf(stderr," Task migration task %d prio %d\n",task,
-					getTaskTypeSWPrio(GetNodeTaskType(dFG,task)));
+//			fprintf(stderr," Task migration task %d prio %d\n",task,
+//					getTaskTypeSWPrio(GetNodeTaskType(dFG,task)));
 			setTaskMode(task, HybSW);
 			counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -701,8 +701,8 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 #if SW_HW_MIG
 				if (FindFreeGPP(0xFF,pes->SWPE)>=0
 						&& getTaskMode(task) == HybHW && taskMig) {
-					fprintf(stderr," Task migration task %d prio %d\n",task,
-										getTaskTypeSWPrio(GetNodeTaskType(dFG,task)));
+//					fprintf(stderr," Task migration task %d prio %d\n",task,
+//										getTaskTypeSWPrio(GetNodeTaskType(dFG,task)));
 					setTaskMode(task, HybSW);
 					counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -724,8 +724,8 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 					&& getTaskMode(task) == HybHW && taskMig) {
 				setTaskMode(task, HybSW);
 				counters->HW2SWMig++;
-				fprintf(stderr," Task migration task %d prio %d freePRR %d\n",task,
-									getTaskTypeSWPrio(GetNodeTaskType(dFG,task)),abs(((pes->HWPE->size-1)-freePRR)));
+//				fprintf(stderr," Task migration task %d prio %d freePRR %d\n",task,
+//									getTaskTypeSWPrio(GetNodeTaskType(dFG,task)),abs(((pes->HWPE->size-1)-freePRR)));
 				return EXIT_SUCCESS;
 #if DEBUG_PRINT
 				fprintf(stderr,"tasks [%d] moved to software due to priority \n",task);
