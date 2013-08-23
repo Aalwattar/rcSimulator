@@ -25,6 +25,7 @@ struct ArgData {
 	int iteration;
 	int printDFG;
 	int taskGraph;
+	int noQSearch;
 
 };
 

@@ -11,6 +11,11 @@
 #include "processors.h"
 #include "data.h"
 
+#define TASK_MIGRATION 0x02
+#define NO_SEARCH_Q	   0x40
+#define IS_FLAG_TRUE(x,flag) (((x)&(flag))&& 1)
+
+
 static int st[BUFFER_SIZE];
 
 static unsigned long ConfigTime[BUFFER_SIZE];
@@ -326,7 +331,7 @@ int AddTask2Queue(Queue ReadyQ,struct node *dFG, int size) {
 /*
  * Run task SII
  */
-int RCSchedI(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int taskMig) {
+int RCSchedI(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int flags) {
 	int task;
 
 	struct NodeData nd;
@@ -350,7 +355,7 @@ int RCSchedI(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node
 		if ((freeGPP=FindFreeGPP(0xFF,pes->SWPE))<0) {
 
 #if SW_HW_MIG
-			if (getTaskMode(task) == HybSW && taskMig) {
+			if (getTaskMode(task) == HybSW && IS_FLAG_TRUE(flags, TASK_MIGRATION ) ) {
 				setTaskMode(task, HybHW);
 				counters->SW2HWMig++;
 #if DEBUG_PRINT
@@ -401,7 +406,7 @@ int RCSchedI(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node
 
 #if SW_HW_MIG
 				if ( FindFreeGPP(0xFF,pes->SWPE)>=0
-						&& getTaskMode(task) == HybHW && taskMig) {
+						&& getTaskMode(task) == HybHW && IS_FLAG_TRUE(flags, TASK_MIGRATION )) {
 					setTaskMode(task, HybSW);
 					counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -461,7 +466,7 @@ int RCSchedI(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node
 /*
  * Run task SII
  */
-int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int taskMig) {
+int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int flags) {
 	int task,tmp;
 
 	struct NodeData nd;
@@ -482,7 +487,7 @@ int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct nod
 		if ((freeGPP=FindFreeGPP(0xFF,pes->SWPE))<0) {
 
 #if SW_HW_MIG
-			if (getTaskMode(task) == HybSW && taskMig) {
+			if (getTaskMode(task) == HybSW && IS_FLAG_TRUE(flags, TASK_MIGRATION )) {
 				setTaskMode(task, HybHW);
 				counters->SW2HWMig++;
 #if DEBUG_PRINT
@@ -510,7 +515,7 @@ int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct nod
 
 	case HybHW:
 	case HWOnly:
-		if ((tmp=SearchReuse(ReadyQ,pes->HWPE,MAX_QUEUE_TASKS,dFG))>=0)
+		if ((tmp=SearchReuse(ReadyQ,pes->HWPE,MAX_QUEUE_TASKS,dFG, IS_FLAG_TRUE(flags, NO_SEARCH_Q)))>=0)
 		{
 			task=tmp;
 		}
@@ -538,7 +543,7 @@ int RCSchedII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct nod
 					{
 #if SW_HW_MIG
 				if ( FindFreeGPP(0xFF,pes->SWPE)>=0
-						&& getTaskMode(task) == HybHW && taskMig) {
+						&& getTaskMode(task) == HybHW && IS_FLAG_TRUE(flags, TASK_MIGRATION )) {
 					setTaskMode(task, HybSW);
 					counters->HW2SWMig++;
 #if DEBUG_PRINT
@@ -609,7 +614,7 @@ void RstCounters(struct Counts* counters) {
 /*
  * Run task SIII
  */
-int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int taskMig) {
+int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct node *dFG, int flags) {
 	int task,tmp;
 
 
@@ -632,7 +637,7 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 
 
 #if SW_HW_MIG
-			if (getTaskMode(task) == HybSW && taskMig) {
+			if (getTaskMode(task) == HybSW && IS_FLAG_TRUE(flags, TASK_MIGRATION )) {
 
 				setTaskMode(task, HybHW);
 				counters->SW2HWMig++;
@@ -670,7 +675,7 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 #if SW_HW_MIG
 		if (getTaskTypeSWPrio(GetNodeTaskType(dFG,task)) == 0
 				&& FindFreeGPP(0xFF,pes->SWPE)>=0
-				&& getTaskMode(task) == HybHW && taskMig) {
+				&& getTaskMode(task) == HybHW && IS_FLAG_TRUE(flags, TASK_MIGRATION )) {
 //			fprintf(stderr," Task migration task %d prio %d\n",task,
 //					getTaskTypeSWPrio(GetNodeTaskType(dFG,task)));
 			setTaskMode(task, HybSW);
@@ -682,7 +687,7 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 		}
 #endif
 
-		if ((tmp=SearchReuse(ReadyQ,pes->HWPE,MAX_QUEUE_TASKS, dFG))>=0)
+		if ((tmp=SearchReuse(ReadyQ,pes->HWPE,MAX_QUEUE_TASKS, dFG, IS_FLAG_TRUE(flags, NO_SEARCH_Q)))>=0)
 				{task=tmp;
 					nd.ExecCount = (unsigned int) GetNodeEmulationHWdelay(dFG,task);
 					nd.TaskType = GetNodeTaskType(dFG,task);
@@ -700,7 +705,7 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 					getTaskTypeCanRun(GetNodeTaskType(dFG,task)), pes->HWPE)) < 0) {
 #if SW_HW_MIG
 				if (FindFreeGPP(0xFF,pes->SWPE)>=0
-						&& getTaskMode(task) == HybHW && taskMig) {
+						&& getTaskMode(task) == HybHW && IS_FLAG_TRUE(flags, TASK_MIGRATION )) {
 //					fprintf(stderr," Task migration task %d prio %d\n",task,
 //										getTaskTypeSWPrio(GetNodeTaskType(dFG,task)));
 					setTaskMode(task, HybSW);
@@ -721,7 +726,7 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 #if SW_HW_MIG
 			else if (getTaskTypeSWPrio(GetNodeTaskType(dFG,task)) <= abs(((pes->HWPE->size-1)-freePRR))
 					&& FindFreeGPP(0xFF,pes->SWPE)>=0
-					&& getTaskMode(task) == HybHW && taskMig) {
+					&& getTaskMode(task) == HybHW && IS_FLAG_TRUE(flags, TASK_MIGRATION )) {
 				setTaskMode(task, HybSW);
 				counters->HW2SWMig++;
 //				fprintf(stderr," Task migration task %d prio %d freePRR %d\n",task,
@@ -767,8 +772,10 @@ int RCSchedIII(Queue ReadyQ, struct Counts *counters, struct PEs *pes, struct no
 	return EXIT_SUCCESS;
 }
 
-int SearchReuse(Queue readyQ,  struct PE *pRRs, int qSize, struct node *dFG )
+int SearchReuse(Queue readyQ,  struct PE *pRRs, int qSize, struct node *dFG, int noQSearch )
 {
+
+
 
 	Queue qtmp;
 	qtmp=CreateQueue(qSize);
@@ -787,7 +794,10 @@ int SearchReuse(Queue readyQ,  struct PE *pRRs, int qSize, struct node *dFG )
 			Enqueue(tmp,qtmp);
 		}
 
-
+		if (noQSearch)
+		{
+			break;
+		}
 
 	}
 

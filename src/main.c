@@ -63,6 +63,10 @@ int main(int argc,  char* argv[] )
     	SET_FLAG_VALUE(simData.flags,TASK_MIGRATION);
     }
 
+    if (argdata.noQSearch)
+    {
+    	SET_FLAG_VALUE(simData.flags,NO_SEARCH_Q);
+    }
     if (argdata.taskGraph)
     {
     	SET_FLAG_VALUE(simData.flags,GENERATE_TASK_GRAPH);

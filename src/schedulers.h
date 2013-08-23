@@ -12,6 +12,8 @@
 #include "queue.h"
 #include "processors.h"
 
+
+
 #define BUSY 1
 #define QEmpty 3
 #define ERROR 4
@@ -36,7 +38,7 @@
 
 
 
- int SearchReuse(Queue readyQ, struct PE *pRRs, int qSize , struct node *);
+ int SearchReuse(Queue readyQ, struct PE *pRRs, int qSize , struct node *,int);
 
 int RCSchedI(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct node *,int);
 int RCSchedII(Queue ReadyQ , struct Counts *Counters, struct PEs *pes, struct node *,int);

@@ -196,13 +196,13 @@ int RunSimulator(struct SimData *simData, struct SimResults *simResults) {
 			switch (State) {
 			case CfgDone:
 
-				schedule(ReadyQ, &counters, &Global_local.pEs, dFG,IS_FLAG_TRUE(simData->flags,TASK_MIGRATION));
+				schedule(ReadyQ, &counters, &Global_local.pEs, dFG,simData->flags);
 				Ticker(&Global_local.pEs, dFG);
 				State = TaskDone;
 				break;
 			case TaskDone:
 				AddTask2Queue(ReadyQ, dFG, dFGsize);
-				schedule(ReadyQ, &counters, &Global_local.pEs, dFG,IS_FLAG_TRUE(simData->flags,TASK_MIGRATION));
+				schedule(ReadyQ, &counters, &Global_local.pEs, dFG,simData->flags);
 				Ticker(&Global_local.pEs, dFG);
 				State = TaskDone;
 				break;

@@ -33,6 +33,7 @@ char displaymsg []={" usage  %s  [options] prog-and-args\n\n"
 		"-g --task-graph \t\t Generate task graph file   \n"
 		"-i --iteration \t\t number of iteration to run a DFG [1]  \n"
 		"-t --task-migration \t\t enable task migration [0]  \n"
+		"-q --disable-q-search \t\t disable searching the read queue for Reuse [0]  \n"
 		"-k --scheduler \t\t pick scheduler (1-3) [3]  \n"
 		"-d --dfg-file  \t\t followed by the DFG file to be processed [dfg.conf]\n"
 		"-a --arch-file \t\t followed by architecture file to be processed [arch.conf]\n"
@@ -61,6 +62,7 @@ static struct option long_options[] = {
      {"task-graph",   no_argument,				  0,  'g' },
      {"iteration",   required_argument, 		  0,  'i' },
      {"task-migration",   no_argument, 			  0,  't' },
+     {"disable-q-search",   no_argument, 			  0,  'q' },
      {"version",   no_argument, 				  0,  'V' },
      {"help",      no_argument, 				  0,  'h' },
      {0,           0,                 0,  0   }
@@ -73,7 +75,7 @@ static struct option long_options[] = {
 	   int c;
 	   opterr = 0;
 	int long_index=0;
-	   while ((c = getopt_long(argc, argv, "d:a:p:i:s:k:vVthg",
+	   while ((c = getopt_long(argc, argv, "d:a:p:i:s:k:vVthgq",
 			   	   long_options,&long_index)) != -1)
 		   switch (c) {
 		   case 'a':
@@ -109,6 +111,9 @@ static struct option long_options[] = {
 			   break;
 		   case 't':
 			   argdatar->taskMigration=1;
+			   break;
+		   case 'q':
+			   argdatar->noQSearch=1;
 			   break;
 		   case 'V':
 			   displayVersion();
@@ -147,6 +152,7 @@ static struct option long_options[] = {
   	arg->iteration=1;
   	arg->taskMigration=0;
   	arg->taskGraph=0;
+  	arg->noQSearch=0;
 
   }
 
